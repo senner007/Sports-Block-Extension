@@ -2,20 +2,25 @@
 import { get_outer, get_labels_elems } from "./container-methods";
 import { CUSTOM_DOCUMENT } from "./custom_types";
 
-
 const browser_document = {
     querySelectorAll: function (query : string) : CUSTOM_DOCUMENT.NodeElemLabel[] {
         return document.querySelectorAll(query) as unknown as CUSTOM_DOCUMENT.NodeElemLabel[]
     }
 }
 
-const label_elems = get_labels_elems("www.dr.dk", browser_document, ["Sport"])
+const label_elems = get_labels_elems("www.dr.dk", browser_document, ["Kampsport"])
 
 console.log(label_elems);
 
-function remove_elems() {
-    // TODO : verify each elem only has one label before calling remove. Call recursively untall all elements removed
+function remove_elems(elems: typeof label_elems) {
+    // TODO : verify each elem only has one label before calling remove. Call recursively untill all elements removed
+    for (const e of elems) {
+        e.container.remove()
+        console.log("removed!")
+    }
 }
+
+remove_elems(label_elems)
 
 
 // const teaser_names = get_teaser_names(label_elems, subjects)
