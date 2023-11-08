@@ -6,6 +6,7 @@
     "dev": "SET NODE_ENV=dev&&nodemon src/content.ts --no-stdin",
     "build": "tsc --project tsconfig.json",
     "build-webpack": "webpack --config webpack.config.js --watch",
+    "build-ui": "webpack --config webpack.config-ui.js --watch",
     "test": "vitest --run --reporter verbose"
   },
   "keywords": [],

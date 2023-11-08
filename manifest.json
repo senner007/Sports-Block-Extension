@@ -12,7 +12,7 @@
     ],
     "content_scripts": [
       {
-        "js": ["dist/main.js"],
+        "js": ["dist/extension-content.js"],
         "run_at" : "document_idle",
         "matches": [
           "https://developer.chrome.com/docs/extensions/*",

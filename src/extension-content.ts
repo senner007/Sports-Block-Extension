@@ -1,6 +1,7 @@
 
 import { get_outer, get_labels_elems } from "./container-methods";
 import { CUSTOM_DOCUMENT } from "./custom_types";
+import { mediator } from "./mediator";
 import { storage_get, storage_set } from "./storage";
 
 const browser_document = {
@@ -29,19 +30,15 @@ const browser_document = {
     remove_elems(label_elems)
 
 })()
+function receiver (request: any, sender: any, sendResponse: (message : any) => void) {
+    console.log(request)
+    sendResponse({farewell: "goodbye"});
+}
 
+mediator.receiveListener(receiver)
 
-chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-        console.log(request)
-
-    //   console.log(sender.tab ?
-    //               "from a content script:" + sender.tab.url :
-    //               "from the extension");
-    //   if (request.greeting === "hello")
-    //     sendResponse({farewell: "goodbye"});
-    }
-  );
+// chrome.runtime.onMessage.addListener(
+   
 
 // console.log(label_elems);
 
