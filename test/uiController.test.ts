@@ -1,0 +1,50 @@
+import { expect, test, describe } from "vitest";
+import { UIController } from "../src/UI/uiController";
+import { uiViewMockInstance, uiMediatorMockInstance } from "./uiControllerMocks";
+
+describe("Test UIController display methods", () => {
+    test('should instantiate', () => {
+        const uiController = new UIController(uiViewMockInstance, uiMediatorMockInstance)
+    })
+
+    test('should execute displayCategories without errors', async () => {
+        const uiController = new UIController(uiViewMockInstance, uiMediatorMockInstance)
+        await uiController.displayCategories()
+    })
+
+    test('should execute displayRemovedElements without errors', async () => {
+        const uiController = new UIController(uiViewMockInstance, uiMediatorMockInstance)
+        await uiController.displayRemovedElements()
+    })
+
+    test('should execute displayFilterByResultsState without errors', async () => {
+        const uiController = new UIController(uiViewMockInstance, uiMediatorMockInstance)
+        await uiController.displayFilterByResultsState()
+    })
+
+});
+
+describe("Test UIController UI callback methods", () => { 
+
+    test('should execute elementsSelectModeOn without errors', async () => {
+        const uiController = new UIController(uiViewMockInstance, uiMediatorMockInstance)
+        await uiController.elementSelectModeToggle("ON")
+    })
+
+    test('should execute elementsSelectModeOff without errors', async () => {
+        const uiController = new UIController(uiViewMockInstance, uiMediatorMockInstance)
+        await uiController.elementSelectModeToggle("OFF")
+    })
+
+
+    test('should execute filterResultsON without errors', async () => {
+        const uiController = new UIController(uiViewMockInstance, uiMediatorMockInstance)
+        await uiController.filterByResultsToggle("ON")
+    })
+
+    test('should execute filterResultsOFF without errors', async () => {
+        const uiController = new UIController(uiViewMockInstance, uiMediatorMockInstance)
+        await uiController.filterByResultsToggle("OFF")
+    })
+
+});

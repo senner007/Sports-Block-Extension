@@ -1,33 +1,30 @@
+import { uiMediator } from "../mediator"
+import { UIController } from "./uiController"
+import { uiView } from "./uiView"
+
+
+const constroller = new UIController(uiView, uiMediator);
+
 
 
 
 console.log("This is a popup!")
 
-function doBeforeLoad(event: any){
-    console.log("dsdsd")
-}
+// function doBeforeLoad(event: any){
+//     // console.log("dsdsd")
+// }
 
-chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-      console.log(sender.tab ?
-                  "from a content script:" + sender.tab.url :
-                  "from the extension");
-      if (request.greeting === "hello")
-        sendResponse({farewell: "goodbye"});
-    }
-);
+// function receiver (request: any, sender: any, sendResponse: (message : any) => void) {
+//   console.log("request received in ui:")
+//   console.log(request)
+// }
 
+// uiMediator.receiveListener(receiver)
 
-(async () => {
-    const [tab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
-    const response = await chrome.tabs.sendMessage(tab.id!, {greeting: "new labels for storage from popup"});
-    // do something with response here, not outside the function
-    console.log(response);
+// // uiMediator.sendMessage("new labels for storage from popup")
 
-  })();
+// document.addEventListener('beforeload', doBeforeLoad , true);
 
-document.addEventListener('beforeload', doBeforeLoad , true);
-
-document.querySelector('li')!.addEventListener("click", () => {
-    console.log("clicked")
-})
+// document.querySelector('li')!.addEventListener("click", () => {
+//     console.log("clicked")
+// })

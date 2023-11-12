@@ -19,7 +19,7 @@ const common = {
 
 module.exports = [{
    entry: {
-      main: path.resolve(__dirname, "src", "extension-content.ts"),
+      main: path.resolve(__dirname, "src\\Content", "extension-content.ts"),
    },
    output: {
       path: path.join(__dirname, "dist"),

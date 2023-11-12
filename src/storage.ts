@@ -1,13 +1,21 @@
-export async function storage_get(index : string) : Promise<string[]> {
-    console.log( chrome.storage )
-    const result = await chrome.storage.sync.get(index)
-    console.log("dsdsdddsds")
-    return result[index];
+interface storagetypes {
+    "categories" : string[]
+    "removedElements" : string[]
+    "filterByResultState" : boolean  
 }
 
+type storagetypeskeys = keyof storagetypes
 
-export async function storage_set(index : string, value : string[]) {
-    chrome.storage.sync.set({ [index]: value });
+class ExtensionStorage {
+    async storage_get<T extends storagetypeskeys>(index : T) : Promise<storagetypes[T]> {
+        const result = await chrome.storage.sync.get(index)
+        return result[index];
+    }
+    
+    async storage_set<T extends storagetypeskeys>(index : T, value : storagetypes[T]) : Promise<void> {
+        chrome.storage.sync.set({ [index]: value });
+    }    
 }
 
+export const extensionStorage = new ExtensionStorage();
 

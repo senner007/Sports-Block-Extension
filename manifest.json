@@ -4,7 +4,7 @@
     "description": "Base Level Extension",
     "version": "1.0",
     "action": {
-      "default_popup": "hello.html",
+      "default_popup": "extension.html",
       "default_icon": "hello_ext.png"
     }, 
     "permissions": [
@@ -13,7 +13,8 @@
     "content_scripts": [
       {
         "js": ["dist/extension-content.js"],
-        "run_at" : "document_idle",
+        "css": [ "extension-content.css" ],
+        "run_at" : "document_start",
         "matches": [
           "https://developer.chrome.com/docs/extensions/*",
           "https://developer.chrome.com/docs/webstore/*",

@@ -5,3 +5,8 @@ export namespace CUSTOM_DOCUMENT {
     export type NodeElemLabel = { innerText : typeof SUBJECTS[number], closest(query : string): NodeContainerElem }
     export type NodeContainerElem = { remove() : void }
 } 
+
+
+export interface IStorage {
+    
+}

@@ -1,0 +1,50 @@
+.sports-block-extension-hide {
+    visibility:hidden;
+    pointer-events: none; 
+    cursor: pointer; 
+}
+
+.sports-block-extension-hide::before {
+    color: red;
+    content: "Blocked by Extension";
+    visibility:visible;
+}
+
+.sports-block-extension-locate {
+
+    pointer-events: none; 
+    cursor: pointer; 
+}
+
+.sports-block-extension-locate::before {
+    z-index : 1000;
+    content: "";
+    height: 100%;
+    width: 100%;
+    visibility:visible;
+    position: absolute;
+    opacity: 1;
+    background-color: red;
+    opacity: 0.5;
+    margin : 0;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.sports-block-extension-locate::after {
+    z-index : 2000;
+    content: "Click to hide category";
+    color : black;
+    background-color: white;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    text-align: center;
+    padding: 3px;
+    font-weight: bold;
+}
