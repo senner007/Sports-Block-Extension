@@ -1,8 +1,8 @@
 
-import { IUIView } from "../src/UI/uiView"
-import { IUIMediator } from "../src/mediator"
+import { IUIView } from "../../src/UI/uiView"
+import { IUIMediator } from "../../src/mediator"
 
-class uiViewMock implements IUIView {
+export class uiViewMock implements IUIView {
 
     toggleElementSelectButton(callback: (toggle: "ON" | "OFF") => Promise<void>): void {
         callback("ON")
@@ -24,7 +24,7 @@ class uiViewMock implements IUIView {
     }
 }
 
-class uiMediatorMock implements IUIMediator {
+export class uiMediatorMock implements IUIMediator {
     setFilterByResultsState(state: boolean): Promise<void> {
         return new Promise(res => res())
     }
@@ -48,6 +48,3 @@ class uiMediatorMock implements IUIMediator {
     }
 
 }
-
-export const uiMediatorMockInstance = new uiMediatorMock()
-export const uiViewMockInstance = new uiViewMock()

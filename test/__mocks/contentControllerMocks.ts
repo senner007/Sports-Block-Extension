@@ -1,11 +1,11 @@
 
 
-import { IArticleElements, IContentView } from "../src/Content/contentView"
-import { IContentMediator } from "../src/mediator"
+import { IArticleElements, IContentView } from "../../src/Content/contentView"
+import { IContentMediator } from "../../src/mediator"
 
 type TElems = { name : string, isHidden : boolean}
 
-class ContentViewMock<TRoot extends object, TElement extends TElems> implements IContentView<TRoot, TElement> {
+export class ContentViewMock<TRoot extends object, TElement extends TElems> implements IContentView<TRoot, TElement> {
     public root = {} as TRoot
 
     public elems = [
@@ -34,7 +34,7 @@ class ContentViewMock<TRoot extends object, TElement extends TElems> implements 
 
 }
 
-class ContentMediatorMock implements IContentMediator {
+export class ContentMediatorMock implements IContentMediator {
     receiveListener(listener: (request: any, sender: any, sendResponse: (message: any) => void) => void): Promise<void> {
         throw new Error("Method not implemented.")
     }
@@ -47,6 +47,3 @@ class ContentMediatorMock implements IContentMediator {
    
 
 }
-
-export const contentMediatorMockInstance = new ContentMediatorMock()
-export const contentViewMockInstance = new ContentViewMock()

@@ -81,17 +81,17 @@ export class ContentView<TRoot extends Document, TElement extends HTMLElement> i
         }
 
 
-        const elems_set: HTMLElement[] = []
+        const elems_set: TElement[] = []
         elems.forEach(elem => {
             if (!elems_set.some(x => elem.isEqualNode(x))) {
-                elems_set.push(elem)
+                elems_set.push(elem as TElement)
             }
         });
 
         return elems_set
             .map(elem => {
                 return {
-                    elem: elem as TElement,
+                    elem: elem,
                     label: elem.querySelector(".dre-teaser-meta-label")?.textContent,  // get label through href tag
                     href: elem.querySelector("a")?.href
                 }

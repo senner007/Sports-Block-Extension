@@ -1,19 +1,20 @@
 import { expect, test, describe } from "vitest";
 import { ContentController } from "../src/Content/contentController";
-import { contentMediatorMockInstance, contentViewMockInstance } from "./contentControllerMocks";
+import { ContentMediatorMock, ContentViewMock } from "./__mocks/contentControllerMocks";
 
 
 describe("Test ContentController methods", () => {
     test('should instantiate', () => {
         const host = "www.dr.dk"
-        new ContentController(contentViewMockInstance, contentMediatorMockInstance, host)
+        new ContentController(new ContentViewMock(), new ContentMediatorMock(), host)
     })
 
     test('should mark elements', async () => {
         const host = "www.dr.dk"
-        const controller = new ContentController(contentViewMockInstance, contentMediatorMockInstance, host)
+        const controllerViewMock = new ContentViewMock()
+        const controller = new ContentController(controllerViewMock, new ContentMediatorMock(), host)
         await controller.markElementsInit();
-        expect(contentViewMockInstance.elems[0]).toBeTruthy();
+        expect(controllerViewMock.elems[0]).toBeTruthy();
         
         
 
