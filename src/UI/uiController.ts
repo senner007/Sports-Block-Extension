@@ -5,7 +5,6 @@ import { IUIView } from "./uiView";
 
 export class UIController {
   constructor(private UIView: IUIView, private uiMediator: IUIMediator) {
-    console.log(uiMediator)
     UIView.toggleElementSelectButton(this.elementSelectModeToggle)
     UIView.toggleFilterByResultsButton(this.filterByResultsToggle)
 
@@ -32,7 +31,6 @@ export class UIController {
   }
 
   elementSelectModeToggle = async (mode: "ON" | "OFF") => {
-    console.log(this)
     await this.uiMediator.requestElementSelectMode(mode);
   }
 

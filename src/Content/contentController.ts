@@ -2,44 +2,46 @@
 import { IContentMediator } from "../mediator";
 import { IArticleElements, IContentView } from "./contentView";
 
+export class ContentController<TRoot, TElement> {
 
-export class ContentController {
-
-  constructor(private contentView: IContentView, private contentMediator: IContentMediator) {
-
+  public isEditMode: boolean = true;
+  constructor(private contentView: IContentView<TRoot, TElement>, private contentMediator: IContentMediator, private host : string) {
+  
   }
 
   async getCategories() {
     const categories = await this.contentMediator.getCategories()
     return categories
   }
-  async findElementsOnPage() {
-    const host = window.location.host;  
-    const elems = this.contentView.getElements(host);
+
+  async findElementsOnPage(root: TRoot | TElement) {
+    const elems = this.contentView.getElements(this.host, root);
     return elems
   }
 
-  hideElement(elem : HTMLElement) {
-    this.contentView.hideElement(elem)
+  observeElements(callback: (elem : TElement) => Promise<void>) {
+    this.contentView.observeElements(callback)
   }
 
-  locateElement(elem : HTMLElement) {
-    this.contentView.locateElement(elem)
+  async markElementsInit() {
+    await this.markElements(this.contentView.root)
   }
 
-  hideByCategory(categories : string[], elems : IArticleElements[]) {
-    elems
-     .filter(elem => categories.includes(elem.label!.toLowerCase()))
-     .forEach(elem => this.hideElement(elem.elem))
+  markElements = async (root: TRoot | TElement) => {
+    const elems = await this.findElementsOnPage(root)
+    if (!elems.length) {
+      return
+    }
+    const categories = await this.getCategories();
+    const categoryElems = elems
+      .filter(elem => categories.includes(elem.label!.toLowerCase()));
+
+    const notCategoryElems = elems
+      .filter(elem => !categories.includes(elem.label!.toLowerCase()));
+    
+    elems.forEach(elem => this.contentView.clearSelection(elem.elem))  
+    categoryElems.forEach(elem => this.contentView.hideElement(elem.elem))
+    notCategoryElems.forEach(elem => this.contentView.tagForRemoval(elem.elem, this.isEditMode ? "ON" : "OFF"))
   }
-
-  locateForSelection(categories : string[], elems : IArticleElements[]) {
-    elems
-     .filter(elem => !categories.includes(elem.label!.toLowerCase()))
-     .forEach(elem => this.locateElement(elem.elem))
-  }
-
-
-  
 
 }

@@ -3,16 +3,35 @@
 import { IArticleElements, IContentView } from "../src/Content/contentView"
 import { IContentMediator } from "../src/mediator"
 
-class ContentViewMock implements IContentView {
-    locateElement(elem: HTMLElement): void {
+type TElems = { name : string, isHidden : boolean}
+
+class ContentViewMock<TRoot extends object, TElement extends TElems> implements IContentView<TRoot, TElement> {
+    public root = {} as TRoot
+
+    public elems = [
+        { name : "elem1", isHidden : false }
+    ] as TElement[]
+
+    getElements(host: string, root: TRoot | TElement): IArticleElements<TElement>[] {
+        return [{
+            elem : this.elems[0],
+            label: "fake-label-1",
+            href: "fake-href"
+        }]
+    }
+    hideElement(elem: TElement): void {
+        elem.isHidden = true
+    }
+    tagForRemoval(elem: TElement, toggle: "ON" | "OFF"): void {
         throw new Error("Method not implemented.")
     }
-    hideElement(elem: HTMLElement): void {
+    observeElements(callback: Function): void {
         throw new Error("Method not implemented.")
     }
-    getElements(host: string): IArticleElements[] {
-        throw new Error("Method not implemented.")
+    clearSelection(elem: TElement): void {
+        return
     }
+
 }
 
 class ContentMediatorMock implements IContentMediator {
@@ -23,7 +42,7 @@ class ContentMediatorMock implements IContentMediator {
         throw new Error("Method not implemented.")
     }
     getCategories(): Promise<string[]> {
-        throw new Error("Method not implemented.")
+       return new Promise(res => res(["fake-label-1", "fake-label-2"]))
     }
    
 

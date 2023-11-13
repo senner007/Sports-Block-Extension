@@ -13,19 +13,14 @@ function toggleHTMLVisibility(toggle : "hidden" | "visible") {
 
         await contentMediator.setCategories(["kampsport", "tennis"])
     
-        const controller = new ContentController(new ContentView(), contentMediator);
-    
-        const categories = await controller.getCategories();
-        console.log(categories)
-    
-        const elems = await controller.findElementsOnPage();
-        console.log(elems)
-    
-        controller.hideByCategory(categories, elems)
+        const controller = new ContentController<Document, HTMLElement>(new ContentView(), contentMediator, window.location.host);
 
-        controller.locateForSelection(categories, elems)
+        controller.markElementsInit();
 
         toggleHTMLVisibility("visible")
+
+        controller.observeElements(controller.markElements)
+
     }
 
 })();
