@@ -49,7 +49,10 @@ class UIMediator extends Mediator implements IUIMediator {
 }
 
 class ContentMediator extends Mediator implements IContentMediator {
-    async sendMessage(message: string) {
+    async sendMessage(message: object) {
+        if("sentence" in message) {
+            return;
+        }
         const response = await chrome.runtime.sendMessage({message});
         console.log("sent content message")
         return response

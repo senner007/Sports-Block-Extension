@@ -13,7 +13,7 @@ describe("Test ContentController methods", () => {
         const host = "www.dr.dk"
         const controllerViewMock = new ContentViewMock()
         const controller = new ContentController(controllerViewMock, new ContentMediatorMock(), host)
-        await controller.markElementsInit();
+        await controller.init();
         expect(controllerViewMock.elems[0]).toBeTruthy();
         
         

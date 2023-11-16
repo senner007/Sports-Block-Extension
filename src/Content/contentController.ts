@@ -23,15 +23,18 @@ export class ContentController<TRoot, TElement> {
     this.contentView.observeElements(callback)
   }
 
-  async markElementsInit() {
+  async init() {
     await this.markElements(this.contentView.root)
+    this.observeElements(this.markElements)
   }
 
   markElements = async (root: TRoot | TElement) => {
+  
     const elems = await this.findElementsOnPage(root)
     if (!elems.length) {
       return
     }
+    console.log("marking elemetns")
     const categories = await this.getCategories();
     const categoryElems = elems
       .filter(elem => categories.includes(elem.label!.toLowerCase()));

@@ -30,18 +30,18 @@ const browser_document = {
     }
     remove_elems(label_elems);
 })();
-function receiver(request: any, sender: any, sendResponse: (message: any) => void) {
-    console.log("request received in content:");
-    console.log(request);
-    try {
-        contentMediator.sendMessage("from content");
-    } catch (error) {
-        console.log("content send error :" + error);
-    }
-    // sendResponse({farewell: "goodbye"});
-}
+// function receiver(request: any, sender: any, sendResponse: (message: any) => void) {
+//     console.log("request received in content:");
+//     console.log(request);
+//     try {
+//         contentMediator.sendMessage("from content");
+//     } catch (error) {
+//         console.log("content send error :" + error);
+//     }
+//     // sendResponse({farewell: "goodbye"});
+// }
 
-contentMediator.receiveListener(receiver);
+// contentMediator.receiveListener(receiver);
 
 const sportsLinks = Array.from(document.querySelectorAll("a"))
     .filter((l) => l.href.includes("www.dr.dk/sporten/"))
