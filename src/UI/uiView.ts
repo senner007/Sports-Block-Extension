@@ -33,15 +33,13 @@ class UIView implements IUIView {
     toggleElementSelectButton(callback: (toggle: "ON" | "OFF") => Promise<void>): void {
         document.querySelector(this.elementSelectButton)?.addEventListener("click", async (e) => {
             const elem = e.target as HTMLElement;
-            console.log(elem);
-            // elem.classList.toggle("ON");
-            callback("ON");
+            elem.classList.toggle("ON");
+            callback(elem.classList.contains("ON") ? "ON" : "OFF");
         });
     }
     toggleFilterByResultsButton(callback: (toggle: "ON" | "OFF") => Promise<void>): void {
         document.querySelector(this.filterByReesultsId)?.addEventListener("click", async (e) => {
             const elem = e.target as HTMLElement;
-            console.log(elem);
             // elem.classList.toggle("ON");
             callback("ON");
         });

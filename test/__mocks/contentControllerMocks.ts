@@ -13,9 +13,9 @@ export class ContentViewMock<TRoot extends object, TElement extends TElems> impl
     ] as TElement[]
 
     getElements(host: string, root: TRoot | TElement): IArticleElements<TElement>[] {
+        // Brug puppeteer her i stedet
         return [{
             elem : this.elems[0],
-            label: "fake-label-1",
             href: "fake-href"
         }]
     }

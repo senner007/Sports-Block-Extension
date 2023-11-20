@@ -15,9 +15,14 @@ describe("Test ContentController methods", () => {
         const controller = new ContentController(controllerViewMock, new ContentMediatorMock(), host)
         await controller.init();
         expect(controllerViewMock.elems[0]).toBeTruthy();
-        
-        
+    })
 
+    test('should find elements', async () => {
+        const host = "www.dr.dk"
+        const controllerViewMock = new ContentViewMock()
+        const controller = new ContentController(controllerViewMock, new ContentMediatorMock(), host)
+        await controller.init();
+        expect(controllerViewMock.elems[0]).toBeTruthy();
     })
 
 });

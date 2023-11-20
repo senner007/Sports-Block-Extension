@@ -1,9 +1,11 @@
 import { extensionStorage } from "./storage";
 
-enum MESSAGE_TOPICS {
+export enum MESSAGE_TOPICS {
     ELEMENT_SELECT_MODE_ON,
     ELEMENT_SELECT_MODE_OFF
 }
+
+export type messageForm = {  topic : MESSAGE_TOPICS, message : string }
 
 abstract class Mediator {
 
@@ -22,9 +24,11 @@ abstract class Mediator {
 }
 
 class UIMediator extends Mediator implements IUIMediator {
+
+
     private async sendMessage(topic : MESSAGE_TOPICS, mesage : string) {
-        const [tab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
-        const response = await chrome.tabs.sendMessage(tab.id!, {topic, mesage});
+        const tab = await chrome.tabs.query({active: true, lastFocusedWindow: true});
+        const response = await chrome.tabs.sendMessage(tab[0].id!, {topic, mesage});
         return response
     }
     async getRemovedElements()  {
@@ -40,6 +44,7 @@ class UIMediator extends Mediator implements IUIMediator {
     }
 
     async requestElementSelectMode(mode : "ON" | "OFF") {
+        console.log("ui mediator :" , mode)
             await this.sendMessage(
                 mode === "ON" 
                 ? MESSAGE_TOPICS.ELEMENT_SELECT_MODE_ON 
@@ -50,11 +55,11 @@ class UIMediator extends Mediator implements IUIMediator {
 
 class ContentMediator extends Mediator implements IContentMediator {
     async sendMessage(message: object) {
+
         if("sentence" in message) {
             return;
         }
         const response = await chrome.runtime.sendMessage({message});
-        console.log("sent content message")
         return response
     }
 }

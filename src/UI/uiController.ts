@@ -31,6 +31,7 @@ export class UIController {
   }
 
   elementSelectModeToggle = async (mode: "ON" | "OFF") => {
+
     await this.uiMediator.requestElementSelectMode(mode);
   }
 

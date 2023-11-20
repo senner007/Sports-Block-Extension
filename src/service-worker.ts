@@ -1,12 +1,5 @@
 console.log("hello from service-worker")
 import * as tf from '@tensorflow/tfjs';
-// chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-//     console.log("fsfsdfsdf")
-//     if (request.type == "worktimer-notification")
-//       chrome.notifications.create('worktimer-notification', request.options, function() { });
-
-//     sendResponse("fdff");
-// });
 
 function function_formatter(regexes: any, str: string) {
     let new_str = str.toLocaleLowerCase()
@@ -28,7 +21,7 @@ function create_vocab_dict(vocab: string[]) {
     return obj
 
 }
-function vectorize(vocab_dict : Record<string,number>, words: string[]) {
+function vectorize(vocab_dict: Record<string, number>, words: string[]) {
     let vectors: number[] = []
     for (const w of words) {
         vectors.push(vocab_dict[w])
@@ -36,45 +29,45 @@ function vectorize(vocab_dict : Record<string,number>, words: string[]) {
     return vectors
 }
 
-function pad_zeros(words : number[]) {
+function pad_zeros(words: number[]) {
 
-    return new Array(60).fill(0).map((w,i) => {
-        return words[i] || 0  
+    return new Array(60).fill(0).map((w, i) => {
+        return words[i] || 0
     });
 
 }
 
-;(async () => {
-    
-    const response_rgex = await fetch( chrome.runtime.getURL("./regexes.json"))
+; (async () => {
+
+    const response_rgex = await fetch(chrome.runtime.getURL("./regexes.json"))
     const regexes = await response_rgex.json()
 
-    const response_vocab = await fetch( chrome.runtime.getURL("./vocab.json"))
+    const response_vocab = await fetch(chrome.runtime.getURL("./vocab.json"))
     const vocab = await response_vocab.json()
 
     const vocab_dict = create_vocab_dict(vocab)
     console.log(vocab_dict)
-    const model = await tf.loadGraphModel( chrome.runtime.getURL("./jsmodel/model.json"));
+    const model = await tf.loadGraphModel(chrome.runtime.getURL("./jsmodel/model.json"));
 
-        chrome.runtime.onMessage.addListener(
-            function(request: any, sender, sendResponse) {
+    chrome.runtime.onMessage.addListener(
+        function (request: any, sender, sendResponse) {
 
-                if (!("sentence" in request)) return;
-        
-                console.log(request)
+            if (!("sentence" in request)) return;
 
-                const formatted = function_formatter(regexes, request.sentence);
-                const vectorized = vectorize(vocab_dict, formatted)
-                const padded = pad_zeros(vectorized);
+            console.log(request)
 
-                const t = tf.tensor([padded]).asType("int32")
-                const answer = model.predict(t)
-                // @ts-ignore
-                const d = answer.dataSync()[0]
+            const formatted = function_formatter(regexes, request.sentence);
+            const vectorized = vectorize(vocab_dict, formatted)
+            const padded = pad_zeros(vectorized);
 
-                sendResponse({farewell: d, padded : padded});
-            }
-          );
+            const t = tf.tensor([padded]).asType("int32")
+            const answer = model.predict(t)
+            // @ts-ignore
+            const d = answer.dataSync()[0]
+
+            sendResponse({ farewell: d, padded: padded });
+        }
+    );
 
 })();
 

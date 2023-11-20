@@ -6,8 +6,7 @@ const hostContainers = {
 
 export interface IArticleElements<TElement> {
     elem: TElement
-    label: string | null | undefined
-    href: string | undefined
+    href: string | undefined,
 }
 
 
@@ -20,7 +19,7 @@ export interface IContentView<TRoot, TElement> {
     clearSelection(elem: TElement): void
 }
 
-export class ContentView<TRoot extends Document, TElement extends HTMLElement> implements IContentView<TRoot, TElement> {
+export class ContentView<TRoot extends Document, TElement extends HTMLElement | HTMLAnchorElement> implements IContentView<TRoot, TElement> {
     tagClass = "sports-block-extension-locate";
     hideClass = "sports-block-extension-hide"
     public root = document as TRoot;
@@ -63,40 +62,37 @@ export class ContentView<TRoot extends Document, TElement extends HTMLElement> i
 
 
     }
-    getElements(host: string, root: TRoot | TElement) {
+    getElements(host: string, root: TRoot | TElement):  IArticleElements<TElement>[] {
 
         const elems = Array.from(root.querySelectorAll("a"))
             .filter((l) => l.href.includes("www.dr.dk/sporten/"))
             .map(elem => elemRecurse(elem))
+        
 
-
-        function elemRecurse(elem: HTMLElement) {
+        function elemRecurse(elem: HTMLElement | HTMLAnchorElement): HTMLElement | HTMLAnchorElement {
             const parentNodeLinkElems = elem.parentElement?.querySelectorAll("a")!
             const parrentNodeHrefSet = [...new Set(Array.from(parentNodeLinkElems).map(e => e.href))]
             if (parrentNodeHrefSet.length > 1) {
-                return elem
+                return  elem 
             }
             return elemRecurse(elem.parentElement!)
 
         }
 
-
-        const elems_set: TElement[] = []
-        elems.forEach(elem => {
-            if (!elems_set.some(x => elem.isEqualNode(x))) {
-                elems_set.push(elem as TElement)
-            }
-        });
-
-        return elems_set
+        return elems
             .map(elem => {
+                let e;
+                if ("href" in elem) {
+                    e = elem.querySelector("a") || elem
+                } else {
+                    e = elem.querySelector("a")!
+                }
+                
                 return {
                     elem: elem,
-                    label: elem.querySelector(".dre-teaser-meta-label")?.textContent,  // get label through href tag
-                    href: elem.querySelector("a")?.href
+                    href: e.pathname
                 }
-            })
-
+            }) as IArticleElements<TElement>[]
 
     }
 
