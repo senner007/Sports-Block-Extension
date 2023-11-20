@@ -58,16 +58,19 @@ export class ContentView<TRoot extends Document, TElement extends HTMLElement | 
 
     createModal = (callback : () => void) => {
         var div = document.createElement("div");
-        div.classList.add("modal")
+        div.classList.add("extension-modal")
         div.id = "myModal"
-        div.innerHTML = `<div class="modal-content">
-            <p>Click on items to hide and close when done</p>
+        div.innerHTML = `<div class="extension-modal-content">
+            <div class="extension-modal-container">
+                <div><h3>Select elements to hide</h3></div>
+                <div class="extension-modal-close">&times;</div>
+            </div>
+            <p>(click close when done)</p>
             <ul id="modal-content-paths"></ul>
-            <span class="close">&times;</span>
         </div>`
         document.body.appendChild(div);
         
-        document.querySelector("#myModal span")?.addEventListener("click", () => {
+        document.querySelector(".extension-modal-close")?.addEventListener("click", () => {
           this.closeModal();
           callback();
         });
