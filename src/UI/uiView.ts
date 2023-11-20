@@ -1,3 +1,5 @@
+import { removeChildNodes } from "../utils";
+
 export interface IUIView {
     displayCategories(categories: string[]): void;
     displayRemovedElements(removedElements: string[]): void;
@@ -14,12 +16,6 @@ class UIView implements IUIView {
     category = ".category"
 
     displayCategories(categories: string[]): void {
-
-        function removeChildNodes(elem : HTMLElement) {
-            while (elem.firstChild) {
-                elem.removeChild(elem.firstChild);
-            }
-        }
 
         const elem = document.querySelector(this.categories)!
         removeChildNodes(elem as HTMLElement)

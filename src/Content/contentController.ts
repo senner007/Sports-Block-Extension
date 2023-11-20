@@ -2,6 +2,7 @@
 import { all } from "@tensorflow/tfjs";
 import { IContentMediator, MESSAGE_TOPICS, messageForm } from "../mediator";
 import { IArticleElements, IContentView } from "./contentView";
+import { removeChildNodes } from "../utils";
 
 export class ContentController<TRoot, TElement> {
 
@@ -9,58 +10,26 @@ export class ContentController<TRoot, TElement> {
   constructor(private contentView: IContentView<TRoot, TElement>, private contentMediator: IContentMediator, private host: { location : string, sportsSection : string, sportsPath : string}) {
     this.contentMediator.receiveListener(this.messageReceiverStorageUpdate)
     this.contentMediator.receiveListener(this.messageReceiverSelectMode)
-    // this.createModal();
   }
 
   createModal = () => {
-    var div = document.createElement("div");
-    div.classList.add("modal")
-    div.id = "myModal"
-    div.innerHTML = `<div class="modal-content">
-        <span class="close">&times;</span>
-    </div>`
-    document.body.appendChild(div);
-    
-    document.querySelector("#myModal span")?.addEventListener("click", () => {
-      // div.style.display = "none";
-      // this.isEditMode = false;
-      this.closeModal();
-      this.messageReceiverSelectMode({topic : MESSAGE_TOPICS.ELEMENT_SELECT_MODE_OFF, message : "" })
-    });
-  }
-
-  appendToModal = (link : string[]) => {
-    const modalContent = document.querySelector(".modal-content")!;
-    for (const l of link) {
-      var div = document.createElement("div");
-      div.innerHTML = l
-      modalContent.appendChild(div)
-    }
-
-  }
-
-  openModal = () => {
-    const modal = document.querySelector("#myModal") as HTMLElement
-    modal!.style.display = "block";
-  }
-
-  closeModal = () => {
-    const modal = document.querySelector("#myModal") as HTMLElement
-    modal!.style.display = "none";
-
-}
+    this.contentView.createModal(this.modalCallback)
+  } 
+  modalCallback= () => {
+    this.messageReceiverSelectMode({topic : MESSAGE_TOPICS.ELEMENT_SELECT_MODE_OFF, message : "" })
+  } 
 
   messageReceiverSelectMode = async (request: messageForm, sender?: any, sendResponse?: any) => {
 
     this.isEditMode = request.topic === MESSAGE_TOPICS.ELEMENT_SELECT_MODE_ON
     if (!this.isEditMode) {
       this.contentView.removeLocateListeners()
-      this.closeModal();
+      this.contentView.closeModal();
     }
     await this.markElements(this.contentView.root)
     if (this.isEditMode) {
       this.contentView.addLocateListeners(this.locateListener)
-      this.openModal();
+      this.contentView.openModal();
     }
   }
 
@@ -69,9 +38,8 @@ export class ContentController<TRoot, TElement> {
     const locatedCategoriesSplit = paths.split("\/")
     .filter(name => name.length > 0)
     .filter((_: string, index: number, arr: string[]) => index < arr.length - 1)
-    const categories = await this.contentMediator.getCategories()
-    console.log(locatedCategoriesSplit)
-    this.appendToModal(locatedCategoriesSplit)
+    const categories = await this.getCategories()
+    this.contentView.appendToModal(locatedCategoriesSplit)
     await this.contentMediator.setCategories(Array.from(new Set([...categories, ...locatedCategoriesSplit!])))
 
   }
@@ -84,7 +52,7 @@ export class ContentController<TRoot, TElement> {
 
   async getCategories() {
     const categories = await this.contentMediator.getCategories()
-    return categories
+    return categories || []
   }
 
   async findElementsOnPage(root: TRoot | TElement) {
@@ -111,11 +79,9 @@ export class ContentController<TRoot, TElement> {
       return
     }
 
-
     const categoryElems = elems
       .filter(elem => {
-        const allLabels = elem.href!.split("\/")
-
+        const allLabels = elem.href!.split("\/").filter(label => label)
         for (const label of allLabels) {
           if (categories.includes(label.toLowerCase())) {
             return true;
@@ -123,10 +89,9 @@ export class ContentController<TRoot, TElement> {
         }
         return false;
       });
-
+  
     const notCategoryElems = elems
       .filter(elem => !categoryElems.map(e => e.href).includes(elem.href));
-
 
     elems.forEach(elem => this.contentView.clearSelection(elem.elem))
     categoryElems.forEach(elem => this.contentView.hideElement(elem.elem))

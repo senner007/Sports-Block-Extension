@@ -3,7 +3,7 @@ import { ContentController } from "../src/Content/contentController";
 import { ContentMediatorMock, ContentViewMock } from "./__mocks/contentControllerMocks";
 
 const host = {
-    location : window.location.host,
+    location : "window.location.host",
     sportsSection : "window.location.host" + "/sporten",
     sportsPath : "/sporten"
 }

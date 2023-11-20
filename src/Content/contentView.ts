@@ -1,3 +1,4 @@
+import { removeChildNodes } from "../utils";
 
 const hostContainers = {
 
@@ -20,6 +21,10 @@ export interface IContentView<TRoot, TElement> {
     addLocateListeners(callback : Function) : void
     removeLocateListeners() : void
     locateListener(callback : Function)  : (e: Event) => void
+    createModal(callback : () => void) : void
+    openModal() : void
+    closeModal() : void
+    appendToModal(paths: string[]) : void
 }
 
 export class ContentView<TRoot extends Document, TElement extends HTMLElement | HTMLAnchorElement> implements IContentView<TRoot, TElement> {
@@ -49,6 +54,58 @@ export class ContentView<TRoot extends Document, TElement extends HTMLElement | 
             const pathname = (e.target as HTMLElement).querySelector("a")!.pathname
             callback(pathname)
         }
+    }
+
+    createModal = (callback : () => void) => {
+        var div = document.createElement("div");
+        div.classList.add("modal")
+        div.id = "myModal"
+        div.innerHTML = `<div class="modal-content">
+            <p>Click on items to hide and close when done</p>
+            <ul id="modal-content-paths"></ul>
+            <span class="close">&times;</span>
+        </div>`
+        document.body.appendChild(div);
+        
+        document.querySelector("#myModal span")?.addEventListener("click", () => {
+          this.closeModal();
+          callback();
+        });
+      }
+
+      appendToModal = (paths : string[]) => {
+        const nodalCOntentPaths = document.querySelector("#modal-content-paths")!;
+        const currentLinks = Array.from(nodalCOntentPaths.querySelectorAll('li')).map(l => l.textContent) as string[]
+        const totalLinks = Array.from(new Set([...currentLinks, ...paths]))
+        this.clearModelContent();
+    
+        for (const l of totalLinks) {
+          var li = document.createElement("li");
+          li.innerHTML = l
+          nodalCOntentPaths.appendChild(li)
+        }
+    
+      }
+    
+      clearModelContent = () => {
+        const nodalCOntentPaths = document.querySelector("#modal-content-paths")!
+        removeChildNodes(nodalCOntentPaths as HTMLElement);
+      }
+    
+      openModal = () => {
+        const modal = document.querySelector("#myModal") as HTMLElement
+        this.clearModelContent();
+        modal!.style.display = "block";
+      }
+    
+      closeModal = () => {
+        try {
+          const modal = document.querySelector("#myModal") as HTMLElement
+          modal!.style.display = "none";
+        } catch(err) {
+          console.log("Modal not loaded yet")
+        }
+    
     }
 
     addLocateListeners(callback : Function) {
@@ -92,10 +149,10 @@ export class ContentView<TRoot extends Document, TElement extends HTMLElement | 
 
 
     }
-    getElements(host: string, root: TRoot | TElement):  IArticleElements<TElement>[] {
+    getElements(sportsSection: string, root: TRoot | TElement):  IArticleElements<TElement>[] {
 
         const elems = Array.from(root.querySelectorAll("a"))
-            .filter((l) => l.href.includes("www.dr.dk/sporten/"))
+            .filter((l) => l.href.includes(sportsSection))
             .map(elem => elemRecurse(elem))
         
 

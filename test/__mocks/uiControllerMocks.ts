@@ -4,7 +4,7 @@ import { IUIMediator } from "../../src/mediator"
 
 export class uiViewMock implements IUIView {
     clickCategory(callback: (category: string) => Promise<void>): void {
-        throw new Error("Method not implemented.")
+        return
     }
 
     toggleElementSelectButton(callback: (toggle: "ON" | "OFF") => Promise<void>): void {

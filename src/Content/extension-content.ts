@@ -15,6 +15,14 @@ function getHost() : { location : string, sportsSection : string, sportsPath : s
             sportsPath : "/sporten"
         }
     }
+    if (host === "nyheder.tv2.dk" || host === "tv2.dk") {
+        console.log("tv2")
+        return {
+            location : host,
+            sportsSection : "sport.tv2.dk",
+            sportsPath : ""
+        }
+    }
 }
 
 // const showModal = () => {
@@ -52,7 +60,6 @@ function getHost() : { location : string, sportsSection : string, sportsPath : s
 
     // toggleHTMLVisibility("hidden")
 
-    // window.onload = async function () {
 
         
     
@@ -67,12 +74,14 @@ function getHost() : { location : string, sportsSection : string, sportsPath : s
         toggleHTMLVisibility("visible")
 
         window.onload = async function () {
+
             controller.createModal();
         }
+        
          
         const response = await chrome.runtime.sendMessage({sentence: "KORT SPORT . Dansk VM-bagspiller skifter Frankrig ud med Ungarn . Den danske håndboldspiller Kristina Jørgensen skifter Frankrig ud med Ungarn fra den kommende sæson"});
         // do something with response here, not outside the function
         console.log(response);
-    // }
+
 
 })();

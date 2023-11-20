@@ -6,6 +6,18 @@ import { IContentMediator } from "../../src/mediator"
 type TElems = { name : string, isHidden : boolean}
 
 export class ContentViewMock<TRoot extends object, TElement extends TElems> implements IContentView<TRoot, TElement> {
+    createModal(callback: () => void): void {
+        throw new Error("Method not implemented.")
+    }
+    openModal(): void {
+        throw new Error("Method not implemented.")
+    }
+    closeModal(): void {
+        throw new Error("Method not implemented.")
+    }
+    appendToModal(paths: string[]): void {
+        throw new Error("Method not implemented.")
+    }
     addLocateListeners(): void {
         throw new Error("Method not implemented.")
     }
@@ -35,10 +47,10 @@ export class ContentViewMock<TRoot extends object, TElement extends TElems> impl
         elem.isHidden = true
     }
     tagForRemoval(elem: TElement, toggle: "ON" | "OFF"): void {
-        throw new Error("Method not implemented.")
+        return
     }
     observeElements(callback: Function): void {
-        throw new Error("Method not implemented.")
+        return
     }
     clearSelection(elem: TElement): void {
         return
@@ -48,7 +60,7 @@ export class ContentViewMock<TRoot extends object, TElement extends TElems> impl
 
 export class ContentMediatorMock implements IContentMediator {
     receiveListener(listener: (request: any, sender: any, sendResponse: (message: any) => void) => void): Promise<void> {
-        throw new Error("Method not implemented.")
+        return new Promise(res => res())
     }
     setCategories(categories: string[]): Promise<void> {
         throw new Error("Method not implemented.")
