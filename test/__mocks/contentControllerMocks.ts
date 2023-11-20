@@ -6,6 +6,18 @@ import { IContentMediator } from "../../src/mediator"
 type TElems = { name : string, isHidden : boolean}
 
 export class ContentViewMock<TRoot extends object, TElement extends TElems> implements IContentView<TRoot, TElement> {
+    addLocateListeners(): void {
+        throw new Error("Method not implemented.")
+    }
+    removeLocateListeners(): void {
+        throw new Error("Method not implemented.")
+    }
+    locateListener(callback : Function): (e: Event) => void  {
+        throw new Error("Method not implemented.")
+    }
+    addListeners(): void {
+        throw new Error("Method not implemented.")
+    }
     public root = {} as TRoot
 
     public elems = [

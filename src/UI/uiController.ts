@@ -7,8 +7,12 @@ export class UIController {
   constructor(private UIView: IUIView, private uiMediator: IUIMediator) {
     UIView.toggleElementSelectButton(this.elementSelectModeToggle)
     UIView.toggleFilterByResultsButton(this.filterByResultsToggle)
+    this.uiMediator.requestElementSelectMode("OFF");
 
-    this.displayCategories()
+
+    this.displayCategories().then(_ => {
+      UIView.clickCategory(this.clickCategoryCallback)
+    }) 
 
   }
 
@@ -17,6 +21,16 @@ export class UIController {
   displayCategories = async () => {
     const categories = await this.uiMediator.getCategories();
     this.UIView.displayCategories(categories);
+
+  }
+  clickCategoryCallback = async (category: string) => {
+    console.log(category)
+    const categories = await this.uiMediator.getCategories();
+    const filteredCategories = categories.filter(c => c !== category)
+    await this.uiMediator.setCategories(filteredCategories);
+    await this.uiMediator.sendMessageStorageUpdate();
+    this.UIView.displayCategories(filteredCategories);
+    this.UIView.clickCategory(this.clickCategoryCallback)
   }
 
   async displayRemovedElements() {
@@ -31,7 +45,6 @@ export class UIController {
   }
 
   elementSelectModeToggle = async (mode: "ON" | "OFF") => {
-
     await this.uiMediator.requestElementSelectMode(mode);
   }
 

@@ -2,7 +2,8 @@ import { extensionStorage } from "./storage";
 
 export enum MESSAGE_TOPICS {
     ELEMENT_SELECT_MODE_ON,
-    ELEMENT_SELECT_MODE_OFF
+    ELEMENT_SELECT_MODE_OFF,
+    STORAGE_UPDATE
 }
 
 export type messageForm = {  topic : MESSAGE_TOPICS, message : string }
@@ -16,6 +17,7 @@ abstract class Mediator {
     }
     async setCategories(categories : string[]) {
         return extensionStorage.storage_set("categories", categories)
+
     }
     async getCategories() {
         return extensionStorage.storage_get("categories")
@@ -25,12 +27,16 @@ abstract class Mediator {
 
 class UIMediator extends Mediator implements IUIMediator {
 
-
     private async sendMessage(topic : MESSAGE_TOPICS, mesage : string) {
         const tab = await chrome.tabs.query({active: true, lastFocusedWindow: true});
         const response = await chrome.tabs.sendMessage(tab[0].id!, {topic, mesage});
         return response
     }
+
+    async sendMessageStorageUpdate() {
+        await this.sendMessage(MESSAGE_TOPICS.STORAGE_UPDATE, "")
+    }
+
     async getRemovedElements()  {
         return extensionStorage.storage_get("removedElements")
     }
@@ -44,7 +50,6 @@ class UIMediator extends Mediator implements IUIMediator {
     }
 
     async requestElementSelectMode(mode : "ON" | "OFF") {
-        console.log("ui mediator :" , mode)
             await this.sendMessage(
                 mode === "ON" 
                 ? MESSAGE_TOPICS.ELEMENT_SELECT_MODE_ON 
@@ -71,6 +76,7 @@ export interface IUIMediator extends Mediator {
     getFilterByResultsState() : Promise<boolean>
     setFilterByResultsState(state : true | false) : Promise<void>
     requestElementSelectMode(mode : "ON" | "OFF") : Promise<void>
+    sendMessageStorageUpdate() : Promise<void>
 }
 
 export interface IContentMediator extends Mediator {

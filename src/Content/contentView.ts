@@ -17,11 +17,15 @@ export interface IContentView<TRoot, TElement> {
     tagForRemoval(elem: TElement, toggle: "ON" | "OFF"): void
     observeElements(callback: Function): void
     clearSelection(elem: TElement): void
+    addLocateListeners(callback : Function) : void
+    removeLocateListeners() : void
+    locateListener(callback : Function)  : (e: Event) => void
 }
 
 export class ContentView<TRoot extends Document, TElement extends HTMLElement | HTMLAnchorElement> implements IContentView<TRoot, TElement> {
     tagClass = "sports-block-extension-locate";
     hideClass = "sports-block-extension-hide"
+    locateListenerInstance: any
     public root = document as TRoot;
 
     clearSelection(elem: TElement): void {
@@ -38,6 +42,32 @@ export class ContentView<TRoot extends Document, TElement extends HTMLElement | 
     hideElement(elem: TElement): void {
         elem.classList.add(this.hideClass)
     }
+    locateListener(callback: Function) {
+
+        return function Foo(e: Event) {
+            e.preventDefault()
+            const pathname = (e.target as HTMLElement).querySelector("a")!.pathname
+            callback(pathname)
+        }
+    }
+
+    addLocateListeners(callback : Function) {
+        this.removeLocateListeners()
+        this.locateListenerInstance = this.locateListener(callback);
+        const elems = document.querySelectorAll("." + this.tagClass)
+        elems.forEach(e => {
+            e.addEventListener("click", this.locateListenerInstance)
+        })
+ 
+    }
+    removeLocateListeners = ()  => {
+    
+        const elems = document.querySelectorAll("." + this.tagClass)
+        elems.forEach(e => {
+            e.removeEventListener("click", this.locateListenerInstance)
+        })
+    }
+
     observeElements(callback: (elem : TElement) => Promise<void> ): void {
 
         const targetNode = document.documentElement

@@ -3,6 +3,9 @@ import { IUIView } from "../../src/UI/uiView"
 import { IUIMediator } from "../../src/mediator"
 
 export class uiViewMock implements IUIView {
+    clickCategory(callback: (category: string) => Promise<void>): void {
+        throw new Error("Method not implemented.")
+    }
 
     toggleElementSelectButton(callback: (toggle: "ON" | "OFF") => Promise<void>): void {
         callback("ON")
@@ -25,6 +28,9 @@ export class uiViewMock implements IUIView {
 }
 
 export class uiMediatorMock implements IUIMediator {
+    sendMessageStorageUpdate(): Promise<void> {
+        throw new Error("Method not implemented.")
+    }
     setFilterByResultsState(state: boolean): Promise<void> {
         return new Promise(res => res())
     }
