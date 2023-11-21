@@ -6,7 +6,6 @@ function function_formatter(regexes: any, str: string) {
     for (const r in regexes) {
         const regex = new RegExp(regexes[r]["regex"], "gi");
         const replacer = regexes[r]["replacewith"].replace("\\1", () => "$1")
-        console.log(replacer)
         new_str = new_str.replace(regex, replacer)
     }
 
@@ -37,6 +36,16 @@ function pad_zeros(words: number[]) {
 
 }
 
+async function getUrl(url: string, signal : AbortSignal) {
+    const res = await fetch(url, { signal })
+    // console.log(res)
+    const json = await res.text();
+    // console.log(json)
+    return json
+}
+
+const urls :Record<string, AbortController> = {}
+
 ; (async () => {
 
     const response_rgex = await fetch(chrome.runtime.getURL("./regexes.json"))
@@ -46,15 +55,33 @@ function pad_zeros(words: number[]) {
     const vocab = await response_vocab.json()
 
     const vocab_dict = create_vocab_dict(vocab)
-    console.log(vocab_dict)
     const model = await tf.loadGraphModel(chrome.runtime.getURL("./jsmodel/model.json"));
 
-    chrome.runtime.onMessage.addListener(
-        function (request: any, sender, sendResponse) {
+    chrome.runtime.onMessage.addListener((request: {url : string, controller: AbortController} | {sentence : string}, sender, sendResponse) => {
 
-            if (!("sentence" in request)) return;
+            if ("url" in request) {
+                if (urls[request.url]) {
+                    urls[request.url].abort()
+                }
+                const controller = new AbortController();
+                const signal = controller.signal;
+                urls[request.url] = controller;
+                ;(async () => {
+                    try {
+                        var url = await getUrl(request.url, signal);
+                        sendResponse(url);
+                    } catch (err) {
+                        sendResponse("ERROR");
+                    }
+               
+                })();
+                return true;
+            };
 
-            console.log(request)
+            if (("sentence" in request)) {
+
+    
+            // console.log(request)
 
             const formatted = function_formatter(regexes, request.sentence);
             const vectorized = vectorize(vocab_dict, formatted)
@@ -64,8 +91,10 @@ function pad_zeros(words: number[]) {
             const answer = model.predict(t)
             // @ts-ignore
             const d = answer.dataSync()[0]
+            sendResponse({ farewell: d, padded: "" });
+            }
+     
 
-            sendResponse({ farewell: d, padded: padded });
         }
     );
 

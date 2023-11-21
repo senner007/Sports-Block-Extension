@@ -59,16 +59,31 @@ class UIMediator extends Mediator implements IUIMediator {
 }
 
 class ContentMediator extends Mediator implements IContentMediator {
-    async sendMessage(message: object) {
 
-        if("sentence" in message) {
-            return;
-        }
-        const response = await chrome.runtime.sendMessage({message});
-        return response
+    private urlsCache : Record<string, string> = {}
+
+    private async sendMessage<T, U>(message: T): Promise<U> {
+        const response = await chrome.runtime.sendMessage(message);
+        return response as Promise<U>
     }
-}
+    async requestUrlHTML(message: {url : string}) {
 
+
+        if (this.urlsCache[message.url]) {
+
+            return this.urlsCache[message.url]
+        }
+            const response = await this.sendMessage<{url : string}, string>({ url : message.url})
+            if (response === "ERROR") {
+                return null
+            }
+            console.log("response")
+
+            this.urlsCache[message.url] = response;
+            return response
+    }
+
+}
 
 
 export interface IUIMediator extends Mediator {
@@ -80,7 +95,7 @@ export interface IUIMediator extends Mediator {
 }
 
 export interface IContentMediator extends Mediator {
-
+    requestUrlHTML(message: object): Promise<string |null>
 }
 
 

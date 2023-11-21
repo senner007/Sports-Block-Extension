@@ -40,7 +40,8 @@ export class ContentViewMock<TRoot extends object, TElement extends TElems> impl
         // Brug puppeteer her i stedet
         return [{
             elem : this.elems[0],
-            href: "fake-href"
+            href: "fake-href",
+            pathname : "fake-path"
         }]
     }
     hideElement(elem: TElement): void {
@@ -59,6 +60,10 @@ export class ContentViewMock<TRoot extends object, TElement extends TElems> impl
 }
 
 export class ContentMediatorMock implements IContentMediator {
+    requestUrlHTML(message: object): Promise<string> {
+        throw new Error("Method not implemented.")
+    }
+
     receiveListener(listener: (request: any, sender: any, sendResponse: (message: any) => void) => void): Promise<void> {
         return new Promise(res => res())
     }

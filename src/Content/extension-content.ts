@@ -1,4 +1,5 @@
 import { contentMediator } from "../mediator";
+import { removeTRailingFullStopAndSpace } from "../utils";
 import { ContentController } from "./contentController";
 import { ContentView } from "./contentView";
 
@@ -58,20 +59,24 @@ function getHost() : { location : string, sportsSection : string, sportsPath : s
 
 ;(async () => {
 
-        const controller = new ContentController<Document, HTMLElement>(new ContentView(), contentMediator, getHost()!);
+    
 
-        await controller.init();
+   
+            const controller = new ContentController<Document, HTMLElement>(new ContentView(), contentMediator, getHost()!);
 
-        toggleHTMLVisibility("visible")
-
+            await controller.init();
+    
+            toggleHTMLVisibility("visible")
+            
         window.onload = async function () {
-
             controller.createModal();
         }
         
-        const response = await chrome.runtime.sendMessage({sentence: "KORT SPORT . Dansk VM-bagspiller skifter Frankrig ud med Ungarn . Den danske håndboldspiller Kristina Jørgensen skifter Frankrig ud med Ungarn fra den kommende sæson"});
-        // do something with response here, not outside the function
-        console.log(response);
+        // const url = await chrome.runtime.sendMessage({url: "https://www.dr.dk/sporten/fodbold/landsholdet/der-er-noget-stolthed-og-aere-der-lider-et-knaek"});
+
+
+        
+
 
 
 })();

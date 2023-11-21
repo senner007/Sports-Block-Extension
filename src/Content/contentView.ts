@@ -7,6 +7,7 @@ const hostContainers = {
 
 export interface IArticleElements<TElement> {
     elem: TElement
+    pathname : string;
     href: string | undefined,
 }
 
@@ -180,7 +181,9 @@ export class ContentView<TRoot extends Document, TElement extends HTMLElement | 
                 
                 return {
                     elem: elem,
-                    href: e.pathname
+                    pathname: e.pathname,
+                    href :  e.href
+
                 }
             }) as IArticleElements<TElement>[]
 

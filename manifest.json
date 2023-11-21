@@ -13,8 +13,37 @@
     "permissions": [
       "storage"
     ],
+    
     "content_scripts": [
-      {
+      { 
+        "web_accessible_resources": [
+        "jsmodel/model.json",
+        "model.json",
+        "file://jsmodel/model.json",
+        "file:///jsmodel/model.json",
+        "file://*",
+        "file:///*",
+        "jsmodel/*",
+        "http://localhost:3000/*",
+        "http://localhost:3000/"
+      ],
+      "permissions": [
+        "storage",
+        "<all_urls>",
+        "jsmodel/model.json",
+        "jsmodel/*",
+        "file://jsmodel/model.json",
+        "file:///jsmodel/model.json",
+        "file:///*",
+        "file://*",
+        "http://myapp.appspot.com/*",
+        "http://localhost:8080/*",
+        "http://127.0.0.1:8080",
+        "http://localhost/*",
+        "http://127.0.0.1/*",
+        "http://localhost:3000/*",
+        "http://127.0.0.1:3000"
+      ],
         "js": ["extension-content.js"],
         "css": [ "extension-content.css" ],
         "run_at" : "document_start",
