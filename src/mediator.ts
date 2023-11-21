@@ -62,33 +62,62 @@ class ContentMediator extends Mediator implements IContentMediator {
 
     private urlsCache: Record<string, string> = {}
     private evaluationCache: Record<string, number> = {}
+    private pending : Promise<string | null> = Promise.resolve("")
+    private modelPending : Promise<number> = Promise.resolve(0)
 
     private async sendMessage<T, U>(message: T): Promise<U> {
         const response = await chrome.runtime.sendMessage(message);
         return response as Promise<U>
     }
+    async urlTaskrunner(message: { url: string }) : Promise<string | null> {
+        // https://stackoverflow.com/questions/53540348/js-async-await-tasks-queue
+        try {
+            await this.pending;
+        } finally {
+            // console.log(JSON.stringify(this.urlsCache))
+            if (message.url in this.urlsCache) {
+                // console.log("from cache")
+                return this.urlsCache[message.url]
+            } else {
+                const response = await this.sendMessage<{ url: string }, string>({ url: message.url })
+                this.urlsCache[message.url] = response;
+                if (response === "ERROR") {
+                    return null
+                }
+                return response
+            }
+        }
+
+    }
+
+    async modelTaskrunner(message: { sentence: string }) : Promise<number> {
+
+        try {
+            await this.modelPending;
+        } finally {
+            if (message.sentence in this.evaluationCache) {
+                return this.evaluationCache[message.sentence]
+            } else {
+                const response = await this.sendMessage<{ sentence: string }, number>({ sentence: message.sentence })
+                this.evaluationCache[message.sentence] = response;
+                return response
+            }
+        }
+
+    }
+
     async requestUrlHTML(message: { url: string }) {
 
-        if (this.urlsCache[message.url]) {
-            return this.urlsCache[message.url]
-        }
-        const response = await this.sendMessage<{ url: string }, string>({ url: message.url })
-        if (response === "ERROR") {
-            return null
-        }
-        this.urlsCache[message.url] = response;
-        return response
+        this.pending = this.urlTaskrunner(message)
+        return this.pending;
     }
 
     async requestModelEvaluate(message: { sentence: string }) {
-
-        if (this.evaluationCache[message.sentence]) {
-            return this.evaluationCache[message.sentence]
-        }
-        const response = await this.sendMessage<{ sentence: string }, number>({ sentence: message.sentence })
-        this.evaluationCache[message.sentence] = response;
-        return response
+        
+        this.modelPending = this.modelTaskrunner(message)
+        return this.modelPending;
     }
+       
 
 }
 

@@ -11,11 +11,29 @@
       "service_worker": "service-worker.js"
     },
     "permissions": [
-      "storage"
+      "storage",
+      "<all_urls>",
+      "https://sport.tv2.dk/*", 
+      "https://nyheder.tv2.dk/*",
+      "storage",
+      "unlimitedStorage",
+      "cookies",
+      "identity"
+    ],
+    "host_permissions": [
+      "https://sport.tv2.dk/*", 
+      "https://nyheder.tv2.dk/*",
+      "<all_urls>",
+      "https://*/"
     ],
     
     "content_scripts": [
       { 
+        "host_permissions":[
+          "https://sport.tv2.dk/*", 
+          "https://nyheder.tv2.dk/*",
+          "<all_urls>"
+        ],
         "web_accessible_resources": [
         "jsmodel/model.json",
         "model.json",
@@ -50,7 +68,8 @@
         "matches": [
           "https://www.dr.dk/*",
           "https://nyheder.tv2.dk/*",
-          "https://tv2.dk/*"
+          "https://tv2.dk/*",
+          "https://sport.tv2.dk/*"
         ],
         "exclude_matches": [
           "https://www.dr.dk/sporten/*"

@@ -38,9 +38,7 @@ function pad_zeros(words: number[]) {
 
 async function getUrl(url: string, signal : AbortSignal) {
     const res = await fetch(url, { signal })
-    // console.log(res)
     const json = await res.text();
-    // console.log(json)
     return json
 }
 

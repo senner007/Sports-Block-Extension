@@ -1,4 +1,37 @@
-import { removeChildNodes } from "../utils";
+import { removeChildNodes, removeTRailingFullStopAndSpace } from "../utils";
+
+
+export function parseDR(parsed: HTMLDivElement): [string, string, string] {
+
+    const label = parsed.querySelector(".dre-article-title-section-label__title--link")?.textContent!
+        || parsed.querySelector(".dre-teaser-meta-label.dre-teaser-meta-label--primary")?.textContent!
+
+    const header =
+        parsed.querySelector(".dre-title-text")?.textContent!
+    const subHeader =
+        parsed.querySelector(".dre-article-title__summary")?.textContent!
+        ||
+        parsed.querySelector(".hydra-latest-news-page-short-news-article__paragraph.dre-variables")?.textContent!
+
+    return [
+        label, header, subHeader
+    ]
+
+}
+
+export function parseTV2(parsed: HTMLElement): [string, string, string] {
+
+    const label = parsed.querySelector(".tc_page__label")?.childNodes[0].textContent!;
+    const header: string = parsed.querySelector(".tc_heading.tc_heading--2")?.childNodes[0].textContent!;
+    const subHeader =
+        parsed.querySelector(".tc_page__body__standfirst")?.childNodes[0].childNodes[0].textContent! ||
+        parsed.querySelector(".tc_richcontent")?.firstChild!.textContent!;
+
+    return [
+        label, header, subHeader
+    ]
+}
+
 
 const hostContainers = {
 
@@ -26,6 +59,7 @@ export interface IContentView<TRoot, TElement> {
     openModal() : void
     closeModal() : void
     appendToModal(paths: string[]) : void
+    parseUrl(host : string , url : string) : string;
 }
 
 export class ContentView<TRoot extends Document, TElement extends HTMLElement | HTMLAnchorElement> implements IContentView<TRoot, TElement> {
@@ -121,6 +155,27 @@ export class ContentView<TRoot extends Document, TElement extends HTMLElement | 
         })
  
     }
+
+    parseUrl(host: string, html : string) {
+
+        // TODO : move to parser on ui
+        var div = document.createElement("div");
+        div.innerHTML = html;
+
+        let sentences;
+
+        if (host === "www.dr.dk") {
+
+            sentences = parseDR(div);
+           
+        } else if (host === "nyheder.tv2.dk" || host === "tv2.dk") {
+            sentences = parseTV2(div);
+        }
+
+        return  removeTRailingFullStopAndSpace(sentences!.join(" . "))
+
+    }
+
     removeLocateListeners = ()  => {
     
         const elems = document.querySelectorAll("." + this.tagClass)
@@ -157,6 +212,7 @@ export class ContentView<TRoot extends Document, TElement extends HTMLElement | 
 
         const elems = Array.from(root.querySelectorAll("a"))
             .filter((l) => l.href.includes(sportsSection))
+            .filter((l) => l.href.includes("-"))
             .map(elem => elemRecurse(elem))
         
 

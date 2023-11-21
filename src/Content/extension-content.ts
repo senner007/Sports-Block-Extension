@@ -35,5 +35,4 @@ function getHost(): { location: string, sportsSection: string, sportsPath: strin
         controller.createModal();
     }
 
-
 })();

@@ -66,30 +66,17 @@ export class ContentController<TRoot, TElement> {
 
   checkIfResults = async(elem : IArticleElements<TElement>) => {
 
-    // if (this.urlsChecked.includes(elem.elem)) {
-    //   return;
-    // }
-
-    // this.urlsChecked.push(elem.elem)
-
     const urlRespponse = await this.contentMediator.requestUrlHTML({url: elem.href})
+
     if (urlRespponse == null) {
       return
     }
 
-    // TODO : move to parser on ui
-    var div = document.createElement("div");
-    div.innerHTML = urlRespponse;
-    const label = div.querySelector(".dre-article-title-section-label__title")?.textContent
-    const heading =  div.querySelector(".dre-title-text")?.textContent
-    const subHeading  = div.querySelector(".dre-article-title__summary")?.textContent
+    const sentenceParsed = this.contentView.parseUrl(this.host.location, urlRespponse)
+    const result = await this.contentMediator.requestModelEvaluate({sentence: sentenceParsed});
 
-    const t_trimmed = removeTRailingFullStopAndSpace(label + " . " + heading + " . " + subHeading)
-    const result = await this.contentMediator.requestModelEvaluate({sentence: t_trimmed});
-
+    // console.log(result)
     const resultBoolean = result > 0.5
-
-    // this.urlsChecked = this.urlsChecked.filter(e => !e)
     if (resultBoolean === true) {
       this.contentView.hideElement(elem.elem)
     }
@@ -132,7 +119,9 @@ export class ContentController<TRoot, TElement> {
 
     elems.forEach(elem => this.contentView.clearSelection(elem.elem))
     categoryElems.forEach(async (elem) => {
+
       if (this.isFilterByResults) {
+      
         this.checkIfResults(elem)
       } else {
         this.contentView.hideElement(elem.elem)

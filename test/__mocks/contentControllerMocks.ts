@@ -6,6 +6,9 @@ import { IContentMediator } from "../../src/mediator"
 type TElems = { name : string, isHidden : boolean}
 
 export class ContentViewMock<TRoot extends object, TElement extends TElems> implements IContentView<TRoot, TElement> {
+    parseUrl(host: string, url: string): string {
+        throw new Error("Method not implemented.")
+    }
     createModal(callback: () => void): void {
         throw new Error("Method not implemented.")
     }
