@@ -66,37 +66,31 @@ export class ContentController<TRoot, TElement> {
 
   checkIfResults = async(elem : IArticleElements<TElement>) => {
 
-    if (this.urlsChecked.includes(elem.elem)) {
-      return;
+    // if (this.urlsChecked.includes(elem.elem)) {
+    //   return;
+    // }
+
+    // this.urlsChecked.push(elem.elem)
+
+    const urlRespponse = await this.contentMediator.requestUrlHTML({url: elem.href})
+    if (urlRespponse == null) {
+      return
     }
 
-    this.urlsChecked.push(elem.elem)
-    let repsonse;
+    // TODO : move to parser on ui
+    var div = document.createElement("div");
+    div.innerHTML = urlRespponse;
+    const label = div.querySelector(".dre-article-title-section-label__title")?.textContent
+    const heading =  div.querySelector(".dre-title-text")?.textContent
+    const subHeading  = div.querySelector(".dre-article-title__summary")?.textContent
 
-    if (elem.href! in this.urlsResult) {
-      repsonse = this.urlsResult[elem.href!]
-    } else {
-      const urlRespponse = await this.contentMediator.requestUrlHTML({url: elem.href})
-      if (urlRespponse !== null) {
-        
+    const t_trimmed = removeTRailingFullStopAndSpace(label + " . " + heading + " . " + subHeading)
+    const result = await this.contentMediator.requestModelEvaluate({sentence: t_trimmed});
 
-        // TODO : move to parser on ui
-        var div = document.createElement("div");
-        div.innerHTML = urlRespponse;
-        const label = div.querySelector(".dre-article-title-section-label__title")?.textContent
-        const heading =  div.querySelector(".dre-title-text")?.textContent
-        const subHeading  = div.querySelector(".dre-article-title__summary")?.textContent
-    
-        const t_trimmed = removeTRailingFullStopAndSpace(label + " . " + heading + " . " + subHeading)
-        const response = await chrome.runtime.sendMessage({sentence: t_trimmed});
+    const resultBoolean = result > 0.5
 
-        this.urlsResult[elem.href!] = { result : response.farewell > 0.5 } 
-      }
-     
-    }
-
-    this.urlsChecked = this.urlsChecked.filter(e => !e)
-    if (elem.href! in this.urlsResult && this.urlsResult[elem.href!].result === true) {
+    // this.urlsChecked = this.urlsChecked.filter(e => !e)
+    if (resultBoolean === true) {
       this.contentView.hideElement(elem.elem)
     }
    

@@ -80,18 +80,15 @@ const urls :Record<string, AbortController> = {}
 
             if (("sentence" in request)) {
 
-    
-            // console.log(request)
+                const formatted = function_formatter(regexes, request.sentence);
+                const vectorized = vectorize(vocab_dict, formatted)
+                const padded = pad_zeros(vectorized);
 
-            const formatted = function_formatter(regexes, request.sentence);
-            const vectorized = vectorize(vocab_dict, formatted)
-            const padded = pad_zeros(vectorized);
-
-            const t = tf.tensor([padded]).asType("int32")
-            const answer = model.predict(t)
-            // @ts-ignore
-            const d = answer.dataSync()[0]
-            sendResponse({ farewell: d, padded: "" });
+                const t = tf.tensor([padded]).asType("int32")
+                const answer = model.predict(t)
+                // @ts-ignore
+                const d = answer.dataSync()[0]
+                sendResponse(d);
             }
      
 

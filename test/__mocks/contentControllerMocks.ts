@@ -56,10 +56,12 @@ export class ContentViewMock<TRoot extends object, TElement extends TElems> impl
     clearSelection(elem: TElement): void {
         return
     }
-
 }
 
 export class ContentMediatorMock implements IContentMediator {
+    requestModelEvaluate(message: { sentence: string }): Promise<number> {
+        throw new Error("Method not implemented.")
+    }
     requestUrlHTML(message: object): Promise<string> {
         throw new Error("Method not implemented.")
     }
