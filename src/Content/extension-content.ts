@@ -17,7 +17,6 @@ function getHost(): { location: string, sportsSection: string, sportsPath: strin
         }
     }
     if (host === "nyheder.tv2.dk" || host === "tv2.dk") {
-        console.log("tv2")
         return {
             location: host,
             sportsSection: "sport.tv2.dk",
@@ -30,6 +29,7 @@ function getHost(): { location: string, sportsSection: string, sportsPath: strin
 ; (async () => {
 
     window.onload = async function () {
+        console.log("WINDIW LOADED EVENT")
         const controller = new ContentController<Document, HTMLElement>(new ContentView(), contentMediator, getHost()!);
         await controller.init();
         controller.createModal();

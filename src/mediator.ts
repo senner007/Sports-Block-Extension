@@ -74,17 +74,22 @@ class ContentMediator extends Mediator implements IContentMediator {
         try {
             await this.pending;
         } finally {
-            // console.log(JSON.stringify(this.urlsCache))
             if (message.url in this.urlsCache) {
-                // console.log("from cache")
                 return this.urlsCache[message.url]
             } else {
-                const response = await this.sendMessage<{ url: string }, string>({ url: message.url })
-                this.urlsCache[message.url] = response;
-                if (response === "ERROR") {
-                    return null
+                try {
+                    const response = await this.sendMessage<{ url: string }, string>({ url: message.url })
+                    this.urlsCache[message.url] = response;
+                    if (response === "ERROR") {
+                        
+                        return null
+                    }
+                    return response
+                } catch(err) {
+                    console.log("fetch error:", err)
+                    throw new Error();
                 }
-                return response
+               
             }
         }
 

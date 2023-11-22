@@ -7,9 +7,7 @@ import { removeChildNodes, removeTRailingFullStopAndSpace } from "../utils";
 export class ContentController<TRoot, TElement> {
 
   public isEditMode: boolean = false;
-  public isFilterByResults: boolean = true;
-  private urlsChecked : TElement[] = []
-  private urlsResult : Record<string, {result : boolean}> = {}
+  public isFilterByResults: boolean = true; // filter by results
   constructor(private contentView: IContentView<TRoot, TElement>, private contentMediator: IContentMediator, private host: { location : string, sportsSection : string, sportsPath : string}) {
     this.contentMediator.receiveListener(this.messageReceiverStorageUpdate)
     this.contentMediator.receiveListener(this.messageReceiverSelectMode)
@@ -74,8 +72,8 @@ export class ContentController<TRoot, TElement> {
 
     const sentenceParsed = this.contentView.parseUrl(this.host.location, urlRespponse)
     const result = await this.contentMediator.requestModelEvaluate({sentence: sentenceParsed});
+    console.log("PARSED :", sentenceParsed, "\nRESULT:",  result)
 
-    // console.log(result)
     const resultBoolean = result > 0.5
     if (resultBoolean === true) {
       this.contentView.hideElement(elem.elem)
@@ -101,8 +99,6 @@ export class ContentController<TRoot, TElement> {
       return
     }
 
-    // console.log("MARK ELEMENTS")
-
     const categoryElems = elems
       .filter(elem => {
         const allLabels = elem.pathname!.split("\/").filter(label => label)
@@ -119,9 +115,7 @@ export class ContentController<TRoot, TElement> {
 
     elems.forEach(elem => this.contentView.clearSelection(elem.elem))
     categoryElems.forEach(async (elem) => {
-
       if (this.isFilterByResults) {
-      
         this.checkIfResults(elem)
       } else {
         this.contentView.hideElement(elem.elem)

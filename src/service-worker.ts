@@ -1,4 +1,4 @@
-console.log("hello from service-worker")
+console.log("Service-worker")
 import * as tf from '@tensorflow/tfjs';
 
 function function_formatter(regexes: any, str: string) {
@@ -44,7 +44,18 @@ async function getUrl(url: string, signal : AbortSignal) {
 
 const urls :Record<string, AbortController> = {}
 
-; (async () => {
+const modelCache : Record<"regexes" | "vocabDict" | "model", any> = {
+    "regexes" : null,
+    "vocabDict" : null,
+    "model": null
+} as const
+
+
+async function loadModel() : Promise<typeof modelCache> {
+
+    if (modelCache["regexes"] !== null) {
+        return modelCache
+    }
 
     const response_rgex = await fetch(chrome.runtime.getURL("./regexes.json"))
     const regexes = await response_rgex.json()
@@ -54,6 +65,16 @@ const urls :Record<string, AbortController> = {}
 
     const vocab_dict = create_vocab_dict(vocab)
     const model = await tf.loadGraphModel(chrome.runtime.getURL("./jsmodel/model.json"));
+
+    modelCache["regexes"] = regexes;
+    modelCache["vocabDict"] = vocab_dict;
+    modelCache["model"] = model;
+
+    return modelCache
+}
+
+
+// ; (async () => {
 
     chrome.runtime.onMessage.addListener((request: {url : string, controller: AbortController} | {sentence : string}, sender, sendResponse) => {
 
@@ -77,23 +98,29 @@ const urls :Record<string, AbortController> = {}
             };
 
             if (("sentence" in request)) {
+                ;(async () => {
 
-                const formatted = function_formatter(regexes, request.sentence);
-                const vectorized = vectorize(vocab_dict, formatted)
-                const padded = pad_zeros(vectorized);
+                    const modelCache = await loadModel();
 
-                const t = tf.tensor([padded]).asType("int32")
-                const answer = model.predict(t)
-                // @ts-ignore
-                const d = answer.dataSync()[0]
-                sendResponse(d);
+                    const formatted = function_formatter(modelCache.regexes, request.sentence);
+                    const vectorized = vectorize(modelCache.vocabDict, formatted)
+                    const padded = pad_zeros(vectorized);
+
+                    const t = tf.tensor([padded]).asType("int32")
+                    const answer = modelCache.model.predict(t)
+                    // @ts-ignore
+                    const d = answer.dataSync()[0]
+                    sendResponse(d);
+
+                })();
+                return true;
+
             }
      
-
         }
     );
 
-})();
+// })();
 
 
 

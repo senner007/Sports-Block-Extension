@@ -68,8 +68,7 @@
         "matches": [
           "https://www.dr.dk/*",
           "https://nyheder.tv2.dk/*",
-          "https://tv2.dk/*",
-          "https://sport.tv2.dk/*"
+          "https://tv2.dk/*"
         ],
         "exclude_matches": [
           "https://www.dr.dk/sporten/*"
