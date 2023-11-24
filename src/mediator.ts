@@ -3,6 +3,8 @@ import { extensionStorage } from "./storage";
 export enum MESSAGE_TOPICS {
     ELEMENT_SELECT_MODE_ON,
     ELEMENT_SELECT_MODE_OFF,
+    FILTER_BY_RESULTS_MODE_ON,
+    FILTER_BY_RESULTS_MODE_OFF,
     STORAGE_UPDATE
 }
 
@@ -23,6 +25,10 @@ abstract class Mediator {
         return extensionStorage.storage_get("categories")
     }
 
+    async getFilterByResultsState() {
+        return extensionStorage.storage_get("filterByResultState")
+    }
+
 }
 
 class UIMediator extends Mediator implements IUIMediator {
@@ -41,12 +47,15 @@ class UIMediator extends Mediator implements IUIMediator {
         return extensionStorage.storage_get("removedElements")
     }
 
-    async getFilterByResultsState() {
-        return extensionStorage.storage_get("filterByResultState")
-    }
 
-    async setFilterByResultsState(state: true | false) {
-        extensionStorage.storage_set("filterByResultState", state)
+    async setFilterByResultsState(mode: "ON" | "OFF") {
+        await extensionStorage.storage_set("filterByResultState", mode === "ON" ? true : false )
+        await this.sendMessage(
+            mode === "ON"
+                ? MESSAGE_TOPICS.FILTER_BY_RESULTS_MODE_ON
+                : MESSAGE_TOPICS.FILTER_BY_RESULTS_MODE_OFF
+            , "")
+
     }
 
     async requestElementSelectMode(mode: "ON" | "OFF") {
@@ -78,6 +87,7 @@ class ContentMediator extends Mediator implements IContentMediator {
                 return this.urlsCache[message.url]
             } else {
                 try {
+                    console.log("fetching")
                     const response = await this.sendMessage<{ url: string }, string>({ url: message.url })
                     this.urlsCache[message.url] = response;
                     if (response === "ERROR") {
@@ -129,8 +139,7 @@ class ContentMediator extends Mediator implements IContentMediator {
 
 export interface IUIMediator extends Mediator {
     getRemovedElements(): Promise<string[]>
-    getFilterByResultsState(): Promise<boolean>
-    setFilterByResultsState(state: true | false): Promise<void>
+    setFilterByResultsState(mode: "ON" | "OFF"): Promise<void>
     requestElementSelectMode(mode: "ON" | "OFF"): Promise<void>
     sendMessageStorageUpdate(): Promise<void>
 }

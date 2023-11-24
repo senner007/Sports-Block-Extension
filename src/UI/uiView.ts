@@ -10,7 +10,7 @@ export interface IUIView {
 }
 
 class UIView implements IUIView {
-    filterByReesultsId = "#toggleFilterByResults";
+    filterByReesultsId = "#filterByResultsButton";
     categories = "#categories"
     elementSelectButton = "#elementSelectButton"
     category = ".category"
@@ -31,6 +31,7 @@ class UIView implements IUIView {
         throw new Error("Method not implemented.");
     }
     displayFilterByResultsButton(toggle: "ON" | "OFF"): void {
+        console.log("toggle" , toggle)
         const elem = document.querySelector(this.filterByReesultsId);
         if (toggle === "ON") {
             elem?.classList.add("ON");
@@ -48,8 +49,8 @@ class UIView implements IUIView {
     toggleFilterByResultsButton(callback: (toggle: "ON" | "OFF") => Promise<void>): void {
         document.querySelector(this.filterByReesultsId)?.addEventListener("click", async (e) => {
             const target = e.target as HTMLElement;
-            // elem.classList.toggle("ON");
-            callback("ON");
+            target.classList.toggle("ON");
+            callback(target.classList.contains("ON") ? "ON" : "OFF");
         });
     }
     clickCategory(callback: (category: string) => Promise<void>): void {

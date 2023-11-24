@@ -4,10 +4,12 @@ import { IUIView } from "./uiView";
 
 
 export class UIController {
+
   constructor(private UIView: IUIView, private uiMediator: IUIMediator) {
     UIView.toggleElementSelectButton(this.elementSelectModeToggle)
     UIView.toggleFilterByResultsButton(this.filterByResultsToggle)
     this.uiMediator.requestElementSelectMode("OFF");
+    this.displayFilterByResultsState()
 
 
     this.displayCategories().then(_ => {
@@ -49,6 +51,6 @@ export class UIController {
   }
 
   filterByResultsToggle = async (mode: "ON" | "OFF") => {
-    await this.uiMediator.setFilterByResultsState(mode === "ON" ? true : false);
+    await this.uiMediator.setFilterByResultsState(mode);
   }
 }

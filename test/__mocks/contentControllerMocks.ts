@@ -62,6 +62,9 @@ export class ContentViewMock<TRoot extends object, TElement extends TElems> impl
 }
 
 export class ContentMediatorMock implements IContentMediator {
+    getFilterByResultsState(): Promise<boolean> {
+        throw new Error("Method not implemented.")
+    }
     requestModelEvaluate(message: { sentence: string }): Promise<number> {
         throw new Error("Method not implemented.")
     }

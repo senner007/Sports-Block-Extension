@@ -7,21 +7,22 @@ import { removeChildNodes, removeTRailingFullStopAndSpace } from "../utils";
 export class ContentController<TRoot, TElement> {
 
   public isEditMode: boolean = false;
-  public isFilterByResults: boolean = true; // filter by results
+  public isFilterByResults: boolean = false; // filter by results
   constructor(private contentView: IContentView<TRoot, TElement>, private contentMediator: IContentMediator, private host: { location : string, sportsSection : string, sportsPath : string}) {
     this.contentMediator.receiveListener(this.messageReceiverStorageUpdate)
     this.contentMediator.receiveListener(this.messageReceiverSelectMode)
+    this.contentMediator.receiveListener(this.messageReceiverfilterByResults)
   }
 
   createModal = () => {
     this.contentView.createModal(this.modalCallback)
   } 
+
   modalCallback= () => {
     this.messageReceiverSelectMode({topic : MESSAGE_TOPICS.ELEMENT_SELECT_MODE_OFF, message : "" })
   } 
 
   messageReceiverSelectMode = async (request: messageForm, sender?: any, sendResponse?: any) => {
-
 
     this.isEditMode = request.topic === MESSAGE_TOPICS.ELEMENT_SELECT_MODE_ON
     if (!this.isEditMode) {
@@ -50,6 +51,17 @@ export class ContentController<TRoot, TElement> {
     if (request.topic === MESSAGE_TOPICS.STORAGE_UPDATE) {
       this.markElements(this.contentView.root)
     }
+  }
+
+  messageReceiverfilterByResults = async (request: messageForm, sender: any, sendResponse: any) => {
+    if (request.topic === MESSAGE_TOPICS.FILTER_BY_RESULTS_MODE_ON) {
+      console.log("filter by results on")
+      this.isFilterByResults = true
+    } else if (request.topic === MESSAGE_TOPICS.FILTER_BY_RESULTS_MODE_OFF) {
+      console.log("filter by results off")
+      this.isFilterByResults = false;
+    }
+    this.markElements(this.contentView.root)
   }
 
   async getCategories() {
@@ -86,8 +98,11 @@ export class ContentController<TRoot, TElement> {
   }
 
   async init() {
+    this.isFilterByResults =  await this.contentMediator.getFilterByResultsState();
     await this.markElements(this.contentView.root)
-    this.observeElements(this.markElements)
+    setTimeout(() => { // execute after DOM update
+      this.observeElements(this.markElements)
+    }, 0);
   }
 
   markElements = async (rootOrElem: TRoot | TElement) => {
@@ -114,14 +129,15 @@ export class ContentController<TRoot, TElement> {
       .filter(elem => !categoryElems.map(e => e.href).includes(elem.href));
 
     elems.forEach(elem => this.contentView.clearSelection(elem.elem))
-    categoryElems.forEach(async (elem) => {
+    
+    for (const categoryElement of  categoryElems) {
       if (this.isFilterByResults) {
-        this.checkIfResults(elem)
+        await this.checkIfResults(categoryElement)
       } else {
-        this.contentView.hideElement(elem.elem)
+        this.contentView.hideElement(categoryElement.elem)
       }
+    }
 
-    })
     notCategoryElems.forEach(elem => this.contentView.tagForRemoval(elem.elem, this.isEditMode ? "ON" : "OFF"))
   }
 
