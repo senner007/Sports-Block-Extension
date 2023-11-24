@@ -3,12 +3,13 @@ import { all } from "@tensorflow/tfjs";
 import { IContentMediator, MESSAGE_TOPICS, messageForm } from "../mediator";
 import { IArticleElements, IContentView } from "./contentView";
 import { removeChildNodes, removeTRailingFullStopAndSpace } from "../utils";
+import { TypeHost } from "./extension-content";
 
 export class ContentController<TRoot, TElement> {
 
   public isEditMode: boolean = false;
   public isFilterByResults: boolean = false; // filter by results
-  constructor(private contentView: IContentView<TRoot, TElement>, private contentMediator: IContentMediator, private host: { location : string, sportsSection : string, sportsPath : string}) {
+  constructor(private contentView: IContentView<TRoot, TElement>, private contentMediator: IContentMediator, private host: TypeHost) {
     this.contentMediator.receiveListener(this.messageReceiverStorageUpdate)
     this.contentMediator.receiveListener(this.messageReceiverSelectMode)
     this.contentMediator.receiveListener(this.messageReceiverfilterByResults)
@@ -37,13 +38,10 @@ export class ContentController<TRoot, TElement> {
   }
 
   locateListener = async (href: string) => {
-    const paths = href.replace(this.host.sportsPath, "")
-    const locatedCategoriesSplit = paths.split("\/")
-    .filter(name => name.length > 0)
-    .filter((_: string, index: number, arr: string[]) => index < arr.length - 1)
+    let locatedCategoriesSplit = this.host.getLabels(href)
     const categories = await this.getCategories()
     this.contentView.appendToModal(locatedCategoriesSplit)
-    await this.contentMediator.setCategories(Array.from(new Set([...categories, ...locatedCategoriesSplit!])))
+    await this.contentMediator.setCategories(Array.from(new Set([...categories, ...locatedCategoriesSplit])))
 
   }
 
@@ -116,7 +114,7 @@ export class ContentController<TRoot, TElement> {
 
     const categoryElems = elems
       .filter(elem => {
-        const allLabels = elem.pathname!.split("\/").filter(label => label)
+        const allLabels = this.host.getLabels(elem.href!)
         for (const label of allLabels) {
           if (categories.includes(label.toLowerCase())) {
             return true;

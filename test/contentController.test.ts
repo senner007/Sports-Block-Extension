@@ -5,7 +5,14 @@ import { ContentMediatorMock, ContentViewMock } from "./__mocks/contentControlle
 const host = {
     location : "window.location.host",
     sportsSection : "window.location.host" + "/sporten",
-    sportsPath : "/sporten"
+    sportsPath : "/sporten",
+    getLabels(href: string) {
+        const paths = href.replace(this.sportsPath, "")
+        const lanbels = paths.split("\/")
+        .filter(name => name.length > 0)
+        .filter((_: string, index: number, arr: string[]) => index < arr.length - 1) 
+        return lanbels.length === 0 ? ["Sport"] : lanbels
+    }
 }
 
 

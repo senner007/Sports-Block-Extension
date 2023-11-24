@@ -16,7 +16,6 @@ export function parseDR(parsed: HTMLDivElement): [string, string, string] {
     return [
         label, header, subHeader
     ]
-
 }
 
 export function parseTV2(parsed: HTMLElement): [string, string, string] {
@@ -86,8 +85,8 @@ export class ContentView<TRoot extends Document, TElement extends HTMLElement | 
 
         return function Foo(e: Event) {
             e.preventDefault()
-            const pathname = (e.target as HTMLElement).querySelector("a")!.pathname
-            callback(pathname)
+            const href = (e.target as HTMLElement).querySelector("a")!.href
+            callback(href)
         }
     }
 
@@ -156,6 +155,14 @@ export class ContentView<TRoot extends Document, TElement extends HTMLElement | 
  
     }
 
+    removeLocateListeners = ()  => {
+    
+        const elems = document.querySelectorAll("." + this.tagClass)
+        elems.forEach(e => {
+            e.removeEventListener("click", this.locateListenerInstance)
+        })
+    }
+
     parseUrl(host: string, html : string) {
 
         // TODO : move to parser on ui
@@ -176,13 +183,7 @@ export class ContentView<TRoot extends Document, TElement extends HTMLElement | 
 
     }
 
-    removeLocateListeners = ()  => {
-    
-        const elems = document.querySelectorAll("." + this.tagClass)
-        elems.forEach(e => {
-            e.removeEventListener("click", this.locateListenerInstance)
-        })
-    }
+   
 
     observeElements(callback: (elem : TElement) => Promise<void> ): void {
 
