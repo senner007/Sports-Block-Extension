@@ -18,15 +18,13 @@ export class UIController {
 
   }
 
-  // TODO find bedre navne, da den gøre mere end display
-
   displayCategories = async () => {
     const categories = await this.uiMediator.getCategories();
     this.UIView.displayCategories(categories);
 
   }
+  // Refactor me!
   clickCategoryCallback = async (category: string) => {
-    console.log(category)
     const categories = await this.uiMediator.getCategories();
     const filteredCategories = categories.filter(c => c !== category)
     await this.uiMediator.setCategories(filteredCategories);
@@ -42,6 +40,7 @@ export class UIController {
   }
 
   async displayFilterByResultsState() {
+    console.log("fdfsff")
     const isFilterByResults = await this.uiMediator.getFilterByResultsState();
     this.UIView.displayFilterByResultsButton(isFilterByResults ? "ON" : "OFF");
   }
@@ -51,6 +50,7 @@ export class UIController {
   }
 
   filterByResultsToggle = async (mode: "ON" | "OFF") => {
+    console.log(mode)
     await this.uiMediator.setFilterByResultsState(mode);
   }
 }

@@ -1,11 +1,11 @@
 {
     "manifest_version": 3,
-    "name": "Hello Extensions",
+    "name": "Sports blocking extension",
     "description": "Base Level Extension",
     "version": "3.0",
     "action": {
       "default_popup": "extension.html",
-      "default_icon": "hello_ext.png"
+      "default_icon": "sports.png"
     },
     "background": {
       "service_worker": "service-worker.js"

@@ -11,6 +11,7 @@ export interface IUIView {
 
 class UIView implements IUIView {
     filterByReesultsId = "#filterByResultsButton";
+    resultsButton = document.querySelector(this.filterByReesultsId) as HTMLInputElement
     categories = "#categories"
     elementSelectButton = "#elementSelectButton"
     category = ".category"
@@ -21,10 +22,14 @@ class UIView implements IUIView {
         removeChildNodes(elem as HTMLElement)
 
         for (const category of categories) {
-            var div = document.createElement("div");
-            div.innerHTML = `<p>${category}</p>`
-            div.classList.add("category")
-            elem?.appendChild(div)
+            var li = document.createElement("li");
+            li.innerHTML = 
+            `<span>
+                <span class="categoryText">${category}</span>
+                <span class="close">&times;</span>
+            </span>`
+            li.classList.add("category")
+            elem?.appendChild(li)
         }
     }
     displayRemovedElements(removedElements: string[]): void {
@@ -32,12 +37,8 @@ class UIView implements IUIView {
     }
     displayFilterByResultsButton(toggle: "ON" | "OFF"): void {
         console.log("toggle" , toggle)
-        const elem = document.querySelector(this.filterByReesultsId);
-        if (toggle === "ON") {
-            elem?.classList.add("ON");
-        } else {
-            elem?.classList.remove("ON");
-        }
+        this.resultsButton.checked = toggle === "ON" ? true : false;
+   
     }
     toggleElementSelectButton(callback: (toggle: "ON" | "OFF") => Promise<void>): void {
         document.querySelector(this.elementSelectButton)?.addEventListener("click", async (e) => {
@@ -47,10 +48,8 @@ class UIView implements IUIView {
         });
     }
     toggleFilterByResultsButton(callback: (toggle: "ON" | "OFF") => Promise<void>): void {
-        document.querySelector(this.filterByReesultsId)?.addEventListener("click", async (e) => {
-            const target = e.target as HTMLElement;
-            target.classList.toggle("ON");
-            callback(target.classList.contains("ON") ? "ON" : "OFF");
+        this.resultsButton?.addEventListener("click", async (e) => {
+            callback( (e.target! as HTMLInputElement).checked ? "ON" : "OFF");
         });
     }
     clickCategory(callback: (category: string) => Promise<void>): void {
@@ -58,7 +57,7 @@ class UIView implements IUIView {
 
         categories.forEach(elem => {
             elem.addEventListener("click", (e) => {
-                const target = e.target as HTMLElement;
+                const target = (e.target as HTMLElement).closest('li')?.querySelector(".categoryText") as HTMLLIElement;
                 const targetText = target.textContent!;
                 callback(targetText)
             })
