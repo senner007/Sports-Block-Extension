@@ -29,10 +29,10 @@ export class uiViewMock implements IUIView {
 
 export class uiMediatorMock implements IUIMediator {
     setFilterByResultsState(mode: "ON" | "OFF"): Promise<void> {
-        throw new Error("Method not implemented.")
+        return new Promise(res => res())
     }
     sendMessageStorageUpdate(): Promise<void> {
-        throw new Error("Method not implemented.")
+        return new Promise(res => res())
     }
 
     getFilterByResultsState(): Promise<boolean> {
