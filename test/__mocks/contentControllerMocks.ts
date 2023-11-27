@@ -12,7 +12,7 @@ export class ContentViewMock<TRoot extends object, TElement extends TElems> impl
     }
 
     createModal(callback: () => void): void {
-        throw new Error("Method not implemented.")
+        return
     }
     openModal(): void {
         throw new Error("Method not implemented.")

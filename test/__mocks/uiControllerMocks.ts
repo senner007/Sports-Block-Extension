@@ -4,7 +4,7 @@ import { IUIMediator } from "../../src/mediator"
 
 export class uiViewMock implements IUIView {
     displayRemovedElements(removedElements: { url: string; labels: string[] }[]): void {
-        throw new Error("Method not implemented.")
+        return
     }
     clickCategory(callback: (category: string) => Promise<void>): void {
         return
@@ -31,7 +31,7 @@ export class uiViewMock implements IUIView {
 
 export class uiMediatorMock implements IUIMediator {
     getElemsRemoved(): Promise<{ url: string; labels: string[] }[]> {
-        throw new Error("Method not implemented.")
+        return new Promise(res => res([]))
     }
 
     setFilterByResultsState(mode: "ON" | "OFF"): Promise<void> {
@@ -57,7 +57,7 @@ export class uiMediatorMock implements IUIMediator {
         return new Promise((resolve, _) => resolve(["Category_1", "Category_2"]))
     }
     receiveListener(listener: (request: any, sender: any, sendResponse: (message: any) => void) => void): Promise<void> {
-        throw new Error("Method not implemented.");
+        return new Promise(res => res())
     }
 
 }
