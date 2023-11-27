@@ -1,6 +1,6 @@
 interface storagetypes {
     "categories" : string[]
-    "removedElements" : string[]
+    "removedElements" : { url : string , labels: string[]}[]
     "filterByResultState" : boolean  
 }
 

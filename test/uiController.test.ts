@@ -9,7 +9,7 @@ describe("Test UIController display methods", () => {
 
     test('should execute displayCategories without errors', async () => {
         const uiController = new UIController(new uiViewMock(), new uiMediatorMock())
-        await uiController.displayCategories()
+        await uiController.setupCategories()
     })
 
     test('should execute displayRemovedElements without errors', async () => {

@@ -2,7 +2,7 @@ import { removeChildNodes } from "../utils";
 
 export interface IUIView {
     displayCategories(categories: string[]): void;
-    displayRemovedElements(removedElements: string[]): void;
+    displayRemovedElements(removedElements: {url : string, labels : string[]}[]): void;
     displayFilterByResultsButton(toggle: "ON" | "OFF"): void;
     toggleElementSelectButton(callback: (toggle: "ON" | "OFF") => Promise<void>): void;
     toggleFilterByResultsButton(callback: (toggle: "ON" | "OFF") => Promise<void>): void;
@@ -15,6 +15,7 @@ class UIView implements IUIView {
     categories = "#categories"
     elementSelectButton = "#elementSelectButton"
     category = ".category"
+    elementsRemoved = "#elementsRemoved"
 
     displayCategories(categories: string[]): void {
 
@@ -32,8 +33,19 @@ class UIView implements IUIView {
             elem?.appendChild(li)
         }
     }
-    displayRemovedElements(removedElements: string[]): void {
-        throw new Error("Method not implemented.");
+    displayRemovedElements(removedElements: {url : string, labels : string[]}[]): void {
+       const ul = document.querySelector(this.elementsRemoved) as HTMLUListElement;
+       removeChildNodes(ul)
+       for (const element of removedElements) {
+        const li = document.createElement("li") as HTMLLIElement
+        li.innerHTML = 
+        `<span>
+            <a href="${element.url}" target="_blank">${element.url}</a>
+            <span>${element.labels.join(",")}</span>
+        </span>`
+        ul!.appendChild(li)
+       }
+        
     }
     displayFilterByResultsButton(toggle: "ON" | "OFF"): void {
         console.log("toggle" , toggle)

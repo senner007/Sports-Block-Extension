@@ -1,6 +1,7 @@
 import { expect, test, describe } from "vitest";
 import { ContentController } from "../src/Content/contentController";
 import { ContentMediatorMock, ContentViewMock } from "./__mocks/contentControllerMocks";
+import { TypeHost } from "../src/Content/extension-content";
 
 const host = {
     location : "window.location.host",
@@ -12,9 +13,11 @@ const host = {
         .filter(name => name.length > 0)
         .filter((_: string, index: number, arr: string[]) => index < arr.length - 1) 
         return lanbels.length === 0 ? ["Sport"] : lanbels
+    },
+    parser(hostInfo : TypeHost, html: string) : string {
+            return ""
     }
 }
-
 
 describe("Test ContentController methods", () => {
     test('should instantiate', () => {

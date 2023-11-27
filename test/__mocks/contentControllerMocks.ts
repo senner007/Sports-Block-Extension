@@ -1,14 +1,16 @@
 
 
 import { IArticleElements, IContentView } from "../../src/Content/contentView"
+import { TypeHost } from "../../src/Content/extension-content"
 import { IContentMediator } from "../../src/mediator"
 
 type TElems = { name : string, isHidden : boolean}
 
 export class ContentViewMock<TRoot extends object, TElement extends TElems> implements IContentView<TRoot, TElement> {
-    parseUrl(host: string, url: string): string {
+    parseUrl(hostInfo: TypeHost, html: string): string {
         throw new Error("Method not implemented.")
     }
+
     createModal(callback: () => void): void {
         throw new Error("Method not implemented.")
     }
@@ -21,10 +23,10 @@ export class ContentViewMock<TRoot extends object, TElement extends TElems> impl
     appendToModal(paths: string[]): void {
         throw new Error("Method not implemented.")
     }
-    addLocateListeners(): void {
+    addLocateForRemovalListeners(): void {
         throw new Error("Method not implemented.")
     }
-    removeLocateListeners(): void {
+    removeLocateForRemovalListeners(): void {
         throw new Error("Method not implemented.")
     }
     locateListener(callback : Function): (e: Event) => void  {
@@ -61,7 +63,15 @@ export class ContentViewMock<TRoot extends object, TElement extends TElems> impl
     }
 }
 
-export class ContentMediatorMock implements IContentMediator {
+export class ContentMediatorMock  implements IContentMediator {
+    DomChangeUpdate(): void {
+        throw new Error("Method not implemented.")
+    }
+
+    setElemsRemoved(removedElems: { url: string; labels: string[] }[]): void {
+        throw new Error("Method not implemented.")
+    }
+
     getFilterByResultsState(): Promise<boolean> {
         return new Promise(res => res(true))
     }

@@ -11,28 +11,12 @@
       background-color: white;
     }
 
-    #categories {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-    }
-
-    #categories > li {
-      min-width: 150px;
-      padding: 5px;
-      margin: 2px;
-    }
-
-    #categories > li > span {
-      display: flex;
-      justify-content: space-between;
-    }
     /* The switch - the box around the slider */
     .switch {
       position: relative;
       display: inline-block;
       width: 60px;
-      height: 34px;
+      height: 24px;
     }
 
     /* Hide default HTML checkbox */
@@ -58,10 +42,10 @@
     .slider:before {
       position: absolute;
       content: "";
-      height: 26px;
-      width: 26px;
+      height: 20px;
+      width: 20px;
       left: 4px;
-      bottom: 4px;
+      bottom: 2px;
       background-color: white;
       -webkit-transition: .4s;
       transition: .4s;
@@ -76,14 +60,14 @@
     }
 
     input:checked + .slider:before {
-      -webkit-transform: translateX(26px);
-      -ms-transform: translateX(26px);
-      transform: translateX(26px);
+      -webkit-transform: translateX(32px);
+      -ms-transform: translateX(32px);
+      transform: translateX(32px);
     }
 
     /* Rounded sliders */
     .slider.round {
-      border-radius: 34px;
+      border-radius: 24px;
     }
 
     .slider.round:before {
@@ -95,13 +79,19 @@
     box-sizing: border-box;
     }
 
-    ul {
+    #categories {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
       list-style-type: none;
       padding: 0;
       margin: 0;
     }
 
-    ul li {
+    #categories > li {
+      min-width: 150px;
+      padding: 5px;
+      margin: 2px;
       border: 1px solid #ddd;
       margin-top: -1px; /* Prevent double borders */
       background-color: #f6f6f6;
@@ -111,12 +101,23 @@
       color: black;
       display: block;
       position: relative;
-
     }
 
-    ul li:hover {
+    #categories > li > span {
+      display: flex;
+      justify-content: space-between;
+    }
+
+
+    #categories > li:hover {
       background-color: #bbb;
       cursor: pointer;
+    }
+
+    #elementSelectButton {
+      padding: 5px;
+      font-size: 12px;
+      border : 1px solid black;
     }
 
     .close {
@@ -132,11 +133,13 @@
     <ul id="categories"></ul>
     <p>Klik for at vælge kategorier på siden</p>
     <button id="elementSelectButton">Vælg kategorier</button>
-    <p>Klik for kun at frasortere artikler med resultater (nb. eksperimentelt og ikke 100% korrekt)</p>
+    <p>Vælg for kun at frasortere artikler med resultater (nb. eksperimentelt og ikke 100% korrekt)</p>
     <label class="switch">
       <input type="checkbox" id="filterByResultsButton">
       <span class="slider round"></span>
     </label>
+    <p>Artikler fjernet fra siden:</p>
+    <ul id="elementsRemoved"></ul>
     <script src="extension-ui.js"></script>
   </body>
 </html>

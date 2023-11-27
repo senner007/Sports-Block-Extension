@@ -1,7 +1,6 @@
 
-import { IUIMediator } from "../mediator";
+import { IUIMediator, MESSAGE_TOPICS, messageForm } from "../mediator";
 import { IUIView } from "./uiView";
-
 
 export class UIController {
 
@@ -10,37 +9,45 @@ export class UIController {
     UIView.toggleFilterByResultsButton(this.filterByResultsToggle)
     this.uiMediator.requestElementSelectMode("OFF");
     this.displayFilterByResultsState()
-
-
-    this.displayCategories().then(_ => {
-      UIView.clickCategory(this.clickCategoryCallback)
-    }) 
-
+    this.displayRemovedElements();
+    this.uiMediator.receiveListener(this.onContentDomChange)
+    this.setupCategories();
   }
 
-  displayCategories = async () => {
+
+  setupCategories = async () => {
     const categories = await this.uiMediator.getCategories();
     this.UIView.displayCategories(categories);
-
+    this.UIView.clickCategory(this.clickCategoryCallback)
   }
+
   // Refactor me!
   clickCategoryCallback = async (category: string) => {
     const categories = await this.uiMediator.getCategories();
     const filteredCategories = categories.filter(c => c !== category)
     await this.uiMediator.setCategories(filteredCategories);
     await this.uiMediator.sendMessageStorageUpdate();
-    this.UIView.displayCategories(filteredCategories);
-    this.UIView.clickCategory(this.clickCategoryCallback)
+    this.setupCategories();
   }
 
   async displayRemovedElements() {
+    const removedElements = await this.uiMediator.getElemsRemoved();
 
-    const removedElements = await this.uiMediator.getRemovedElements();
-    this.UIView.displayRemovedElements(removedElements);
+    const unique = removedElements.filter(
+          (obj, index) =>
+          removedElements.findIndex((item) => item.url === obj.url) === index
+        );
+  
+    this.UIView.displayRemovedElements(unique);
+  }
+
+  onContentDomChange = async (request: messageForm, sender?: any, sendResponse?: any) => {
+    if ( request.topic === MESSAGE_TOPICS.CONTENT_DOM_CHANGE) {
+      await this.displayRemovedElements();
+    }
   }
 
   async displayFilterByResultsState() {
-    console.log("fdfsff")
     const isFilterByResults = await this.uiMediator.getFilterByResultsState();
     this.UIView.displayFilterByResultsButton(isFilterByResults ? "ON" : "OFF");
   }
@@ -50,7 +57,6 @@ export class UIController {
   }
 
   filterByResultsToggle = async (mode: "ON" | "OFF") => {
-    console.log(mode)
     await this.uiMediator.setFilterByResultsState(mode);
   }
 }

@@ -5,8 +5,13 @@ export enum MESSAGE_TOPICS {
     ELEMENT_SELECT_MODE_OFF,
     FILTER_BY_RESULTS_MODE_ON,
     FILTER_BY_RESULTS_MODE_OFF,
+    CONTENT_DOM_CHANGE,
+    GET_ELEMENTS_REMOVED,
+    REQUEST_URL,
+    REQUEST_MODEL_EVALUATION,
     STORAGE_UPDATE
 }
+
 
 export type messageForm = { topic: MESSAGE_TOPICS, message: string }
 
@@ -33,18 +38,21 @@ abstract class Mediator {
 
 class UIMediator extends Mediator implements IUIMediator {
 
+    async getElemsRemoved(): Promise<{ url : string, labels : string[]}[]> {
+        const result = await this.sendMessage(MESSAGE_TOPICS.GET_ELEMENTS_REMOVED, "")
+        console.log(result)
+        return result;
+    }
+
     private async sendMessage(topic: MESSAGE_TOPICS, mesage: string) {
         const tab = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
         const response = await chrome.tabs.sendMessage(tab[0].id!, { topic, mesage });
+        console.log(response)
         return response
     }
 
     async sendMessageStorageUpdate() {
         await this.sendMessage(MESSAGE_TOPICS.STORAGE_UPDATE, "")
-    }
-
-    async getRemovedElements() {
-        return extensionStorage.storage_get("removedElements")
     }
 
 
@@ -74,8 +82,8 @@ class ContentMediator extends Mediator implements IContentMediator {
     private pending : Promise<string | null> = Promise.resolve("")
     private modelPending : Promise<number> = Promise.resolve(0)
 
-    private async sendMessage<T, U>(message: T): Promise<U> {
-        const response = await chrome.runtime.sendMessage(message);
+    private async sendMessage<T, U>(topic : MESSAGE_TOPICS, message?: T): Promise<U> {
+        const response = await chrome.runtime.sendMessage({ topic, message});
         return response as Promise<U>
     }
     async urlTaskrunner(message: { url: string }) : Promise<string | null> {
@@ -88,7 +96,7 @@ class ContentMediator extends Mediator implements IContentMediator {
             } else {
                 try {
                     console.log("fetching")
-                    const response = await this.sendMessage<{ url: string }, string>({ url: message.url })
+                    const response = await this.sendMessage<{ url: string }, string>(MESSAGE_TOPICS.REQUEST_URL, { url: message.url })
                     this.urlsCache[message.url] = response;
                     if (response === "ERROR") {
                         
@@ -113,7 +121,7 @@ class ContentMediator extends Mediator implements IContentMediator {
             if (message.sentence in this.evaluationCache) {
                 return this.evaluationCache[message.sentence]
             } else {
-                const response = await this.sendMessage<{ sentence: string }, number>({ sentence: message.sentence })
+                const response = await this.sendMessage<{ sentence: string }, number>(MESSAGE_TOPICS.REQUEST_MODEL_EVALUATION, { sentence: message.sentence })
                 this.evaluationCache[message.sentence] = response;
                 return response
             }
@@ -132,21 +140,28 @@ class ContentMediator extends Mediator implements IContentMediator {
         this.modelPending = this.modelTaskrunner(message)
         return this.modelPending;
     }
-       
+
+    async DomChangeUpdate() {
+        
+        const response = await this.sendMessage<{}, number>(MESSAGE_TOPICS.CONTENT_DOM_CHANGE, {} )
+    }
 
 }
 
 
 export interface IUIMediator extends Mediator {
-    getRemovedElements(): Promise<string[]>
     setFilterByResultsState(mode: "ON" | "OFF"): Promise<void>
     requestElementSelectMode(mode: "ON" | "OFF"): Promise<void>
     sendMessageStorageUpdate(): Promise<void>
+    getElemsRemoved(): Promise<{ url : string, labels : string[]}[]>
 }
 
 export interface IContentMediator extends Mediator {
     requestUrlHTML(message: object): Promise<string | null>
-    requestModelEvaluate(message: { sentence: string }): Promise<number>
+    requestModelEvaluate(message: { sentence: string }): Promise<number>;
+    DomChangeUpdate() : void
+
+
 }
 
 

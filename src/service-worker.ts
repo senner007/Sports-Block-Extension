@@ -1,5 +1,6 @@
 console.log("Service-worker")
 import * as tf from '@tensorflow/tfjs';
+import { MESSAGE_TOPICS } from './mediator';
 
 function function_formatter(regexes: any, str: string) {
     let new_str = str.toLocaleLowerCase()
@@ -76,18 +77,20 @@ async function loadModel() : Promise<typeof modelCache> {
 
 // ; (async () => {
 
-    chrome.runtime.onMessage.addListener((request: {url : string, controller: AbortController} | {sentence : string}, sender, sendResponse) => {
+    chrome.runtime.onMessage.addListener((request: {topic : MESSAGE_TOPICS.REQUEST_URL, message : {url : string}} | {topic : MESSAGE_TOPICS.REQUEST_MODEL_EVALUATION, message : { sentence : string}}, sender, sendResponse) => {
 
-            if ("url" in request) {
-                if (urls[request.url]) {
-                    urls[request.url].abort()
+            if (request.topic === MESSAGE_TOPICS.REQUEST_URL) {
+                const messageUrl = request.message.url
+       
+                if (urls[messageUrl]) {
+                    urls[messageUrl].abort()
                 }
                 const controller = new AbortController();
                 const signal = controller.signal;
-                urls[request.url] = controller;
+                urls[messageUrl] = controller;
                 ;(async () => {
                     try {
-                        var url = await getUrl(request.url, signal);
+                        var url = await getUrl(messageUrl, signal);
                         sendResponse(url);
                     } catch (err) {
                         sendResponse("ERROR");
@@ -97,12 +100,13 @@ async function loadModel() : Promise<typeof modelCache> {
                 return true;
             };
 
-            if (("sentence" in request)) {
+            if (request.topic === MESSAGE_TOPICS.REQUEST_MODEL_EVALUATION) {
+                const messageSentence = request.message.sentence;
                 ;(async () => {
 
                     const modelCache = await loadModel();
 
-                    const formatted = function_formatter(modelCache.regexes, request.sentence);
+                    const formatted = function_formatter(modelCache.regexes, messageSentence);
                     const vectorized = vectorize(modelCache.vocabDict, formatted)
                     const padded = pad_zeros(vectorized);
 
