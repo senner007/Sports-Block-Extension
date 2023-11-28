@@ -1,2 +1,15 @@
-#### Fix point to local typescript lib (wsl ubuntu) :
-[Stack overflow typescript version](https://stackoverflow.com/questions/39668731/what-typescript-version-is-visual-studio-code-using-how-to-update-it)
+### Install
+
+Install node.js and npm
+
+<code>npm install</code>
+
+### Compile and watch:
+
+<code>npm run webpack</code>
+
+### Extension setup:
+
+I Chrome browser gå til chrome://extensions/
+
+Vælg 'Indlæs upakket' og vælg mappen
