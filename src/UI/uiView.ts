@@ -48,7 +48,6 @@ class UIView implements IUIView {
         
     }
     displayFilterByResultsButton(toggle: "ON" | "OFF"): void {
-        console.log("toggle" , toggle)
         this.resultsButton.checked = toggle === "ON" ? true : false;
    
     }

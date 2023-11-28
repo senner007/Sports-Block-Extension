@@ -17,7 +17,7 @@ export class ContentController<TRoot, TElement> {
     this.isFilterResultsOnly = await this.contentMediator.getFilterByResultsState();
     await this.markElements(this.contentView.root)
     setTimeout(() => { // execute after DOM update
-      this.observeElements(async (elem : TElement) => {
+      this.contentView.observeElements(async (elem : TElement) => {
         await this.markElements(elem);
         const elems = await this.findRelatedElems(elem);
         if (elems.elemsToBeHidden.length > 0) {
@@ -25,7 +25,11 @@ export class ContentController<TRoot, TElement> {
         }
       });
     }, 0);
-    this.createModal();
+    this.contentView.createModal(this.modalCallback)
+  }
+
+  modalCallback = () => {
+    this.messageReceiverSelectMode({ topic: MESSAGE_TOPICS.ELEMENT_SELECT_MODE_OFF, message: "" })
   }
 
   messageReceiverGetElementsRemoved = (request: messageForm, sender?: any, sendResponse?: any) => {
@@ -36,14 +40,6 @@ export class ContentController<TRoot, TElement> {
       })();
       return true;
     }
-  }
-
-  createModal = () => {
-    this.contentView.createModal(this.modalCallback)
-  }
-
-  modalCallback = () => {
-    this.messageReceiverSelectMode({ topic: MESSAGE_TOPICS.ELEMENT_SELECT_MODE_OFF, message: "" })
   }
 
   messageReceiverSelectMode = async (request: messageForm, sender?: any, sendResponse?: any) => {
@@ -91,11 +87,6 @@ export class ContentController<TRoot, TElement> {
     return categories || []
   }
 
-  async findElementsOnPage(root: TRoot | TElement) {
-    const elems = this.contentView.getElements(this.host.sportsSection, root);
-    return elems
-  }
-
   checkIfResults = async (elem: IArticleElements<TElement>) => {
 
     const urlRespponse = await this.contentMediator.requestUrlHTML({ url: elem.href })
@@ -107,20 +98,14 @@ export class ContentController<TRoot, TElement> {
     const sentenceParsed = this.contentView.parseUrl(this.host, urlRespponse)
     const result = await this.contentMediator.requestModelEvaluate({ sentence: sentenceParsed });
     console.log("PARSED :", sentenceParsed, "\nRESULT:", result)
-
     return result > 0.5
-
-  }
-
-  observeElements(callback: (elem: TElement) => Promise<void>) {
-    this.contentView.observeElements(callback)
   }
 
 
   findRelatedElems = async (rootOrElem: TRoot | TElement) => {
     const categories = await this.getCategories();
 
-    const elems = await this.findElementsOnPage(rootOrElem)
+    const elems = this.contentView.getElements(this.host.sportsSection, rootOrElem);
     if (elems.length === 0) {
       return { elemsToBeHidden : [], remaining: [] }
     }

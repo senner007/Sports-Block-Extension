@@ -14,7 +14,6 @@ export class UIController {
     this.setupCategories();
   }
 
-
   setupCategories = async () => {
     const categories = await this.uiMediator.getCategories();
     this.UIView.displayCategories(categories);

@@ -143,7 +143,7 @@ class ContentMediator extends Mediator implements IContentMediator {
 
     async DomChangeUpdate() {
         
-        const response = await this.sendMessage<{}, number>(MESSAGE_TOPICS.CONTENT_DOM_CHANGE, {} )
+        await this.sendMessage<{}, number>(MESSAGE_TOPICS.CONTENT_DOM_CHANGE, {} )
     }
 
 }

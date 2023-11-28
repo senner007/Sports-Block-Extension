@@ -76,7 +76,7 @@ async function loadModel() : Promise<typeof modelCache> {
 
 
 // ; (async () => {
-
+// TODO : import from mediator
     chrome.runtime.onMessage.addListener((request: {topic : MESSAGE_TOPICS.REQUEST_URL, message : {url : string}} | {topic : MESSAGE_TOPICS.REQUEST_MODEL_EVALUATION, message : { sentence : string}}, sender, sendResponse) => {
 
             if (request.topic === MESSAGE_TOPICS.REQUEST_URL) {
